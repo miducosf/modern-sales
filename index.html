@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SIMPLE – Overlay with Keyboard Nudge</title>
+  <title>SIMPLE – Overlay (Debug ON)</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body class="debug">
   <main class="bg-frame" aria-label="SIMPLE desktop background with app icons" tabindex="-1">
     <picture>
-      <source srcset="assets/background-mobile.png" media="(max-width: 900px)">
+      <source srcset="assets/background-mobile.webp" media="(max-width: 900px)">
       <img src="assets/background-desktop.png" alt="" class="bg-img">
     </picture>
 
@@ -22,10 +22,10 @@
     <button class="icon-hit photos"   data-tip="Photos"   aria-label="Open Photos"><span class="tag">6</span></button>
 
     <div id="toast" role="status" aria-live="polite"></div>
-    <button id="debugToggle" class="debug-toggle" aria-pressed="false" title="Toggle debug (red outlines)">Debug</button>
-    <div class="help">Click page to focus. Keys: 1–6 select • Arrows move • Shift=big steps • S resize • P print</div>
-  
-    <!-- Position HUD (shows current CSS variables and lets you copy them) -->
+
+    <button id="debugToggle" class="debug-toggle" aria-pressed="true" title="Toggle debug (red outlines)">Debug</button>
+
+    <!-- HUD with current CSS variable values + copy button -->
     <aside id="hud" class="hud" aria-live="polite">
       <div class="hud-row"><strong>left</strong>: <span data-var="--icon-left"></span></div>
       <div class="hud-row"><strong>size</strong>: <span data-var="--icon-size"></span></div>
@@ -35,10 +35,11 @@
       <div class="hud-row"><strong>t4</strong>: <span data-var="--icon4-top"></span></div>
       <div class="hud-row"><strong>t5</strong>: <span data-var="--icon5-top"></span></div>
       <div class="hud-row"><strong>t6</strong>: <span data-var="--icon6-top"></span></div>
-      <button id="copyVars" class="hud-copy" type="button" title="Copy CSS variables (P)">Copy</button>
+      <button id="copyVars" class="hud-copy" type="button" title="Copy CSS variables (P/C)">Copy</button>
     </aside>
 
-</main>
+    <div class="help">Debug is ON. Click the image to focus. Keys: 1–6 select • Arrows move • Shift=big steps • S resize • P/C copy</div>
+  </main>
 
   <script src="script.js"></script>
 </body>

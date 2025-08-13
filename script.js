@@ -6,7 +6,15 @@
   const debugBtn = document.getElementById('debugToggle');
   const rootStyle = document.documentElement.style;
 
-  // Ensure keyboard events go to this page (esp. if embedded in an iframe)
+  // Persisted debug (ON by default)
+  try{
+    const persisted = localStorage.getItem('simple_debug');
+    const on = persisted === null ? true : persisted === '1';
+    document.body.classList.toggle('debug', on);
+    debugBtn.setAttribute('aria-pressed', on ? 'true':'false');
+  }catch(e){ /* ignore */ }
+
+  // Ensure keyboard events go to this page
   frame.addEventListener('pointerdown', ()=> frame.focus());
 
   const actions = {
@@ -35,45 +43,46 @@
     tmr = setTimeout(()=> toast.classList.remove('show'), 1200);
   }
 
+  // HUD sync
+  function getVar(name){ return parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || 0; }
+  function setVar(name,val){ rootStyle.setProperty(name, (Math.round(val*1000)/1000) + '%'); }
+  function renderHUD(){
+    const map = {
+      '--icon-left': getVar('--icon-left'),
+      '--icon-size': getVar('--icon-size'),
+      '--icon1-top': getVar('--icon1-top'),
+      '--icon2-top': getVar('--icon2-top'),
+      '--icon3-top': getVar('--icon3-top'),
+      '--icon4-top': getVar('--icon4-top'),
+      '--icon5-top': getVar('--icon5-top'),
+      '--icon6-top': getVar('--icon6-top'),
+    };
+    Object.entries(map).forEach(([k,v])=>{
+      const el = document.querySelector(`[data-var="${k}"]`);
+      if (el) el.textContent = `${v.toFixed(2)}%`;
+    });
+  }
+  renderHUD();
+
   // Debug toggle
   function toggleDebug(force){
     const on = typeof force === 'boolean' ? force : !document.body.classList.contains('debug');
     document.body.classList.toggle('debug', on);
     debugBtn.setAttribute('aria-pressed', on ? 'true':'false');
+    try{ localStorage.setItem('simple_debug', on ? '1' : '0'); }catch(e){}
     say(on ? 'Debug ON (red overlays)' : 'Debug OFF');
   }
   debugBtn.addEventListener('click', ()=> toggleDebug());
 
   // Keyboard nudging
   let selection = 1; // 1..6
-  // utility to read all vars & update HUD
-  function getVars(){
-    const getVar = (name)=> parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || 0;
-    return {
-      left: getVar('--icon-left'), size: getVar('--icon-size'),
-      t1: getVar('--icon1-top'), t2: getVar('--icon2-top'), t3: getVar('--icon3-top'),
-      t4: getVar('--icon4-top'), t5: getVar('--icon5-top'), t6: getVar('--icon6-top')
-    };
-  }
-  function renderHUD(){
-    const vars = getVars();
-    for (const [key,val] of Object.entries(vars)){
-      const sel = key==='left' ? '--icon-left' : key==='size' ? '--icon-size' : `--icon${key.slice(1)}-top`;
-      const el = document.querySelector(`[data-var="${sel}"]`);
-      if (el) el.textContent = `${val.toFixed(2)}%`;
-    }
-  }
-  renderHUD();
   document.addEventListener('keydown', (e)=>{
-    // If focused inside an input/textarea, ignore
     const t = e.target;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
 
     if (e.key >= '1' && e.key <= '6'){ selection = parseInt(e.key,10); toggleDebug(true); say('Selected icon '+selection); return; }
 
     const step = (e.shiftKey ? 0.5 : 0.1); // percentage step
-    const getVar = (name)=> parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || 0;
-    const setVar = (name,val)=> rootStyle.setProperty(name, (Math.round(val*1000)/1000) + '%');
 
     if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
       e.preventDefault();
@@ -95,7 +104,11 @@
     }
     if (e.key.toLowerCase()==='p' || e.key.toLowerCase()==='c'){
       e.preventDefault();
-      const v = getVars();
+      const v = {
+        left: getVar('--icon-left'), size: getVar('--icon-size'),
+        t1: getVar('--icon1-top'), t2: getVar('--icon2-top'), t3: getVar('--icon3-top'),
+        t4: getVar('--icon4-top'), t5: getVar('--icon5-top'), t6: getVar('--icon6-top')
+      };
       const text = `:root{\n  --icon-left: ${v.left.toFixed(2)}%;\n  --icon-size: ${v.size.toFixed(2)}%;\n  --icon1-top: ${v.t1.toFixed(2)}%;\n  --icon2-top: ${v.t2.toFixed(2)}%;\n  --icon3-top: ${v.t3.toFixed(2)}%;\n  --icon4-top: ${v.t4.toFixed(2)}%;\n  --icon5-top: ${v.t5.toFixed(2)}%;\n  --icon6-top: ${v.t6.toFixed(2)}%;\n}`;
       navigator.clipboard.writeText(text).then(()=> say('CSS copied to clipboard')).catch(()=> say('Copy failed'));
       renderHUD();
@@ -104,22 +117,5 @@
     if (e.key.toLowerCase()==='d'){ toggleDebug(); }
   });
 
-  // Auto-enable debug if ?debug is present
   if (location.search.includes('debug')) toggleDebug(true);
 })();
-
-  // Copy button in HUD
-  const copyBtn = document.getElementById('copyVars');
-  if (copyBtn){
-    copyBtn.addEventListener('click', ()=>{
-      const v = getVars();
-      const text = `:root{\n  --icon-left: ${v.left.toFixed(2)}%;\n  --icon-size: ${v.size.toFixed(2)}%;\n  --icon1-top: ${v.t1.toFixed(2)}%;\n  --icon2-top: ${v.t2.toFixed(2)}%;\n  --icon3-top: ${v.t3.toFixed(2)}%;\n  --icon4-top: ${v.t4.toFixed(2)}%;\n  --icon5-top: ${v.t5.toFixed(2)}%;\n  --icon6-top: ${v.t6.toFixed(2)}%;\n}`;
-"
-      "navigator.clipboard.writeText(text).then(()=> say('CSS copied to clipboard')).catch(()=> say('Copy failed'));
-"
-      "});
-"
-      "}
-"
-      "})();
-"
