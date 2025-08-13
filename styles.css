@@ -131,3 +131,20 @@ body.debug .icon-hit .tag{ opacity:1; }
     --icon6-top: 73.5%;
   }
 }
+
+
+/* Floating HUD with current CSS variable values */
+.hud{
+  position: absolute; top: 10px; left: 10px; z-index: 15;
+  background: rgba(255,255,255,.92); color:#0f172a;
+  border: 1px solid rgba(15,23,42,.12);
+  border-radius: 10px; padding: 8px 10px; min-width: 170px;
+  box-shadow: 0 8px 20px rgba(2,8,23,.12);
+  font: 12px/1.35 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+.hud-row{ display:flex; justify-content:space-between; gap:8px; margin:2px 0; }
+.hud-copy{
+  margin-top:6px; width:100%; padding:6px 8px; font: 600 12px system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  border-radius:8px; border:1px solid rgba(15,23,42,.2); background:#fff; cursor:pointer;
+}
+body:not(.debug) .hud{ display:none; } /* HUD only shows in debug mode */
