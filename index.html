@@ -3,29 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Conversation Project</title>
+    <title>SIMPLE UI Overlay</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="desktop">
-        <div id="icon-bar">
-            <button class="icon email" title="Email"></button>
-            <button class="icon text" title="Text"></button>
-            <button class="icon video" title="Video Chat"></button>
-            <button class="icon calendar" title="Calendar"></button>
-            <button class="icon tasks" title="Tasks"></button>
-            <button class="icon photos" title="Photos"></button>
-        </div>
-        <div id="main-window">
-            <video id="opening-video" controls>
-                <source src="media/opening.mp4" type="video/mp4">
-            </video>
-            <div id="mentor-panel">
-                <img src="media/avatar.png" alt="Mentor Avatar" class="avatar">
-                <p class="feedback">Welcome! I'll provide feedback here as you interact with the client.</p>
-            </div>
-        </div>
+    <div class="background-container">
+        <picture>
+            <source srcset="assets/background-mobile.webp" media="(max-width: 768px)">
+            <img src="assets/background-desktop.webp" alt="SIMPLE Background" class="background-image">
+        </picture>
+
+        <!-- Invisible buttons overlay -->
+        <button class="icon-btn" style="--top: var(--icon1-top)" title="Email" onclick="openEmail()"></button>
+        <button class="icon-btn" style="--top: var(--icon2-top)" title="Text" onclick="openText()"></button>
+        <button class="icon-btn" style="--top: var(--icon3-top)" title="Video Chat" onclick="openVideo()"></button>
+        <button class="icon-btn" style="--top: var(--icon4-top)" title="Calendar" onclick="openCalendar()"></button>
+        <button class="icon-btn" style="--top: var(--icon5-top)" title="Tasks" onclick="openTasks()"></button>
+        <button class="icon-btn" style="--top: var(--icon6-top)" title="Photos" onclick="openPhotos()"></button>
     </div>
+
+    <div id="toast" class="toast"></div>
+
     <script src="script.js"></script>
 </body>
 </html>
