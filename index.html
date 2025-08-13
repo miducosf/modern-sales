@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SIMPLE – Overlay (Debug ON)</title>
+  <title>SIMPLE – Overlay (Debug Fix)</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="debug">
@@ -25,7 +25,7 @@
 
     <button id="debugToggle" class="debug-toggle" aria-pressed="true" title="Toggle debug (red outlines)">Debug</button>
 
-    <!-- HUD with current CSS variable values + copy button -->
+    <!-- HUD -->
     <aside id="hud" class="hud" aria-live="polite">
       <div class="hud-row"><strong>left</strong>: <span data-var="--icon-left"></span></div>
       <div class="hud-row"><strong>size</strong>: <span data-var="--icon-size"></span></div>
@@ -38,7 +38,7 @@
       <button id="copyVars" class="hud-copy" type="button" title="Copy CSS variables (P/C)">Copy</button>
     </aside>
 
-    <div class="help">Debug is ON. Click the image to focus. Keys: 1–6 select • Arrows move • Shift=big steps • S resize • P/C copy</div>
+    <div class="help">Click the image to focus. Keys: D debug • 1–6 select • Arrows move • Shift=big • S resize • P/C copy</div>
   </main>
 
   <script src="script.js"></script>

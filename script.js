@@ -6,16 +6,17 @@
   const debugBtn = document.getElementById('debugToggle');
   const rootStyle = document.documentElement.style;
 
-  // Persisted debug (ON by default)
+  // Focus the frame so keyboard shortcuts work
+  window.addEventListener('load', ()=> frame.focus());
+  frame.addEventListener('pointerdown', ()=> frame.focus());
+
+  // Persist debug state; ON by default
   try{
     const persisted = localStorage.getItem('simple_debug');
     const on = persisted === null ? true : persisted === '1';
     document.body.classList.toggle('debug', on);
     debugBtn.setAttribute('aria-pressed', on ? 'true':'false');
-  }catch(e){ /* ignore */ }
-
-  // Ensure keyboard events go to this page
-  frame.addEventListener('pointerdown', ()=> frame.focus());
+  }catch(e){}
 
   const actions = {
     email(){ say('Email opened'); },
@@ -26,7 +27,6 @@
     photos(){ say('Photos opened'); }
   };
 
-  // Wire click actions
   document.querySelectorAll('.icon-hit').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const key = [...btn.classList].find(c=>actions[c]);
@@ -34,7 +34,6 @@
     });
   });
 
-  // Toast helper
   let tmr;
   function say(msg){
     toast.textContent = msg;
@@ -43,7 +42,6 @@
     tmr = setTimeout(()=> toast.classList.remove('show'), 1200);
   }
 
-  // HUD sync
   function getVar(name){ return parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || 0; }
   function setVar(name,val){ rootStyle.setProperty(name, (Math.round(val*1000)/1000) + '%'); }
   function renderHUD(){
@@ -64,7 +62,6 @@
   }
   renderHUD();
 
-  // Debug toggle
   function toggleDebug(force){
     const on = typeof force === 'boolean' ? force : !document.body.classList.contains('debug');
     document.body.classList.toggle('debug', on);
@@ -75,15 +72,14 @@
   debugBtn.addEventListener('click', ()=> toggleDebug());
 
   // Keyboard nudging
-  let selection = 1; // 1..6
+  let selection = 1;
   document.addEventListener('keydown', (e)=>{
     const t = e.target;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
 
     if (e.key >= '1' && e.key <= '6'){ selection = parseInt(e.key,10); toggleDebug(true); say('Selected icon '+selection); return; }
 
-    const step = (e.shiftKey ? 0.5 : 0.1); // percentage step
-
+    const step = (e.shiftKey ? 0.5 : 0.1);
     if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
       e.preventDefault();
       if (!document.body.classList.contains('debug')) toggleDebug(true);
