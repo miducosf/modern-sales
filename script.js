@@ -1,117 +1,25 @@
 (function(){
   'use strict';
 
-  const frame = document.querySelector('.bg-frame');
-  const toast = document.getElementById('toast');
-  const debugBtn = document.getElementById('debugToggle');
-  const rootStyle = document.documentElement.style;
+  // Expose simple hooks for integration with your app.
+  // Replace these with your real screen loaders when ready.
+  function openEmail(){ window.SIMPLE?.openEmail?.() ?? console.log('[SIMPLE] Email'); }
+  function openText(){ window.SIMPLE?.openText?.() ?? console.log('[SIMPLE] Text'); }
+  function openVideo(){ window.SIMPLE?.openVideo?.() ?? console.log('[SIMPLE] Video'); }
+  function openCalendar(){ window.SIMPLE?.openCalendar?.() ?? console.log('[SIMPLE] Calendar'); }
+  function openTasks(){ window.SIMPLE?.openTasks?.() ?? console.log('[SIMPLE] Tasks'); }
+  function openPhotos(){ window.SIMPLE?.openPhotos?.() ?? console.log('[SIMPLE] Photos'); }
 
-  // Focus the frame so keyboard shortcuts work
-  window.addEventListener('load', ()=> frame.focus());
-  frame.addEventListener('pointerdown', ()=> frame.focus());
+  const actions = { email:openEmail, text:openText, video:openVideo, calendar:openCalendar, tasks:openTasks, photos:openPhotos };
 
-  // Persist debug state; ON by default
-  try{
-    const persisted = localStorage.getItem('simple_debug');
-    const on = persisted === null ? true : persisted === '1';
-    document.body.classList.toggle('debug', on);
-    debugBtn.setAttribute('aria-pressed', on ? 'true':'false');
-  }catch(e){}
-
-  const actions = {
-    email(){ say('Email opened'); },
-    text(){ say('Text opened'); },
-    video(){ say('Video opened'); },
-    calendar(){ say('Calendar opened'); },
-    tasks(){ say('Tasks opened'); },
-    photos(){ say('Photos opened'); }
-  };
-
-  document.querySelectorAll('.icon-hit').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const key = [...btn.classList].find(c=>actions[c]);
-      if (key) actions[key]();
+  document.querySelectorAll('.icon-hit').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = [...btn.classList].find(c => actions[c]);
+      actions[key]?.();
+    });
+    // Keyboard activate
+    btn.addEventListener('keydown', (e)=>{
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
     });
   });
-
-  let tmr;
-  function say(msg){
-    toast.textContent = msg;
-    toast.classList.add('show');
-    clearTimeout(tmr);
-    tmr = setTimeout(()=> toast.classList.remove('show'), 1200);
-  }
-
-  function getVar(name){ return parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || 0; }
-  function setVar(name,val){ rootStyle.setProperty(name, (Math.round(val*1000)/1000) + '%'); }
-  function renderHUD(){
-    const map = {
-      '--icon-left': getVar('--icon-left'),
-      '--icon-size': getVar('--icon-size'),
-      '--icon1-top': getVar('--icon1-top'),
-      '--icon2-top': getVar('--icon2-top'),
-      '--icon3-top': getVar('--icon3-top'),
-      '--icon4-top': getVar('--icon4-top'),
-      '--icon5-top': getVar('--icon5-top'),
-      '--icon6-top': getVar('--icon6-top'),
-    };
-    Object.entries(map).forEach(([k,v])=>{
-      const el = document.querySelector(`[data-var="${k}"]`);
-      if (el) el.textContent = `${v.toFixed(2)}%`;
-    });
-  }
-  renderHUD();
-
-  function toggleDebug(force){
-    const on = typeof force === 'boolean' ? force : !document.body.classList.contains('debug');
-    document.body.classList.toggle('debug', on);
-    debugBtn.setAttribute('aria-pressed', on ? 'true':'false');
-    try{ localStorage.setItem('simple_debug', on ? '1' : '0'); }catch(e){}
-    say(on ? 'Debug ON (red overlays)' : 'Debug OFF');
-  }
-  debugBtn.addEventListener('click', ()=> toggleDebug());
-
-  // Keyboard nudging
-  let selection = 1;
-  document.addEventListener('keydown', (e)=>{
-    const t = e.target;
-    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
-
-    if (e.key >= '1' && e.key <= '6'){ selection = parseInt(e.key,10); toggleDebug(true); say('Selected icon '+selection); return; }
-
-    const step = (e.shiftKey ? 0.5 : 0.1);
-    if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
-      e.preventDefault();
-      if (!document.body.classList.contains('debug')) toggleDebug(true);
-      if (e.key === 'ArrowUp')   setVar(`--icon${selection}-top`, getVar(`--icon${selection}-top`) - step);
-      if (e.key === 'ArrowDown') setVar(`--icon${selection}-top`, getVar(`--icon${selection}-top`) + step);
-      if (e.key === 'ArrowLeft') setVar(`--icon-left`, getVar(`--icon-left`) - step);
-      if (e.key === 'ArrowRight')setVar(`--icon-left`, getVar(`--icon-left`) + step);
-      say(`left=${getVar('--icon-left').toFixed(2)}%, t${selection}=${getVar(`--icon${selection}-top`).toFixed(2)}%`);
-      renderHUD();
-      return;
-    }
-    if (e.key.toLowerCase()==='s'){
-      e.preventDefault();
-      setVar('--icon-size', Math.max(1, getVar('--icon-size') + (e.shiftKey ? 1 : 0.2)));
-      say(`size=${getVar('--icon-size').toFixed(2)}%`);
-      renderHUD();
-      return;
-    }
-    if (e.key.toLowerCase()==='p' || e.key.toLowerCase()==='c'){
-      e.preventDefault();
-      const v = {
-        left: getVar('--icon-left'), size: getVar('--icon-size'),
-        t1: getVar('--icon1-top'), t2: getVar('--icon2-top'), t3: getVar('--icon3-top'),
-        t4: getVar('--icon4-top'), t5: getVar('--icon5-top'), t6: getVar('--icon6-top')
-      };
-      const text = `:root{\n  --icon-left: ${v.left.toFixed(2)}%;\n  --icon-size: ${v.size.toFixed(2)}%;\n  --icon1-top: ${v.t1.toFixed(2)}%;\n  --icon2-top: ${v.t2.toFixed(2)}%;\n  --icon3-top: ${v.t3.toFixed(2)}%;\n  --icon4-top: ${v.t4.toFixed(2)}%;\n  --icon5-top: ${v.t5.toFixed(2)}%;\n  --icon6-top: ${v.t6.toFixed(2)}%;\n}`;
-      navigator.clipboard.writeText(text).then(()=> say('CSS copied to clipboard')).catch(()=> say('Copy failed'));
-      renderHUD();
-      return;
-    }
-    if (e.key.toLowerCase()==='d'){ toggleDebug(); }
-  });
-
-  if (location.search.includes('debug')) toggleDebug(true);
 })();

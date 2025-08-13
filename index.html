@@ -3,42 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SIMPLE – Overlay (Debug Fix)</title>
+  <title>SIMPLE – Interactive Background</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body class="debug">
-  <main class="bg-frame" aria-label="SIMPLE desktop background with app icons" tabindex="-1">
+<body>
+  <main class="bg-frame" aria-label="SIMPLE desktop background with app icons">
     <picture>
       <source srcset="assets/background-mobile.webp" media="(max-width: 900px)">
       <img src="assets/background-desktop.png" alt="" class="bg-img">
     </picture>
 
-    <!-- Overlay hit areas -->
-    <button class="icon-hit email"    data-tip="Email"    aria-label="Open Email"><span class="tag">1</span></button>
-    <button class="icon-hit text"     data-tip="Text"     aria-label="Open Text"><span class="tag">2</span></button>
-    <button class="icon-hit video"    data-tip="Video"    aria-label="Open Video"><span class="tag">3</span></button>
-    <button class="icon-hit calendar" data-tip="Calendar" aria-label="Open Calendar"><span class="tag">4</span></button>
-    <button class="icon-hit tasks"    data-tip="Tasks"    aria-label="Open Tasks"><span class="tag">5</span></button>
-    <button class="icon-hit photos"   data-tip="Photos"   aria-label="Open Photos"><span class="tag">6</span></button>
-
-    <div id="toast" role="status" aria-live="polite"></div>
-
-    <button id="debugToggle" class="debug-toggle" aria-pressed="true" title="Toggle debug (red outlines)">Debug</button>
-
-    <!-- HUD -->
-    <aside id="hud" class="hud" aria-live="polite">
-      <div class="hud-row"><strong>left</strong>: <span data-var="--icon-left"></span></div>
-      <div class="hud-row"><strong>size</strong>: <span data-var="--icon-size"></span></div>
-      <div class="hud-row"><strong>t1</strong>: <span data-var="--icon1-top"></span></div>
-      <div class="hud-row"><strong>t2</strong>: <span data-var="--icon2-top"></span></div>
-      <div class="hud-row"><strong>t3</strong>: <span data-var="--icon3-top"></span></div>
-      <div class="hud-row"><strong>t4</strong>: <span data-var="--icon4-top"></span></div>
-      <div class="hud-row"><strong>t5</strong>: <span data-var="--icon5-top"></span></div>
-      <div class="hud-row"><strong>t6</strong>: <span data-var="--icon6-top"></span></div>
-      <button id="copyVars" class="hud-copy" type="button" title="Copy CSS variables (P/C)">Copy</button>
-    </aside>
-
-    <div class="help">Click the image to focus. Keys: D debug • 1–6 select • Arrows move • Shift=big • S resize • P/C copy</div>
+    <!-- Overlay hit areas (order: Email, Text, Video, Calendar, Tasks, Photos) -->
+    <button class="icon-hit email"    data-tip="Email"    aria-label="Open Email"></button>
+    <button class="icon-hit text"     data-tip="Text"     aria-label="Open Text"></button>
+    <button class="icon-hit video"    data-tip="Video"    aria-label="Open Video"></button>
+    <button class="icon-hit calendar" data-tip="Calendar" aria-label="Open Calendar"></button>
+    <button class="icon-hit tasks"    data-tip="Tasks"    aria-label="Open Tasks"></button>
+    <button class="icon-hit photos"   data-tip="Photos"   aria-label="Open Photos"></button>
   </main>
 
   <script src="script.js"></script>

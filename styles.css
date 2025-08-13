@@ -1,38 +1,37 @@
 :root{
-  --icon-left: 7.8%;
-  --icon-size: 4.6%;
-  --icon1-top: 23.5%;
-  --icon2-top: 36.2%;
-  --icon3-top: 48.9%;
-  --icon4-top: 61.6%;
-  --icon5-top: 74.3%;
-  --icon6-top: 87.0%;
+  /* Finalized measurements (percentages relative to image box) */
+  --icon-left: 9.10%;
+  --icon-size: 4.60%;
+  --icon1-top: 23.50%;
+  --icon2-top: 34.40%;
+  --icon3-top: 44.30%;
+  --icon4-top: 54.80%;
+  --icon5-top: 64.90%;
+  --icon6-top: 75.10%;
 }
 
 html, body { height: 100%; }
-body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:#0b3b88; }
+body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+       background:#0b3b88; /* keep the blue page background you liked */ }
 
+/* Centered, responsive background image */
 .bg-frame {
   position: relative;
-  max-width: 1366px;
-  margin: 0 auto;
+  max-width: 1366px;   /* adjust if you want */
+  margin: 0 auto;      /* centers the image on the blue page background */
   line-height: 0;
-  outline: none;
 }
 .bg-img {
-  position: relative;
-  z-index: 0;               /* ensure image is behind overlays */
   display: block;
   width: 100%;
   height: auto;
   user-select: none;
-  pointer-events: none;
+  pointer-events: none; /* ensure clicks go to overlays */
 }
 
-/* Hit areas */
+/* Invisible but accessible hit areas */
 .icon-hit{
   position:absolute;
-  z-index: 5;               /* above image */
   width:var(--icon-size);
   aspect-ratio:1/1;
   left: calc(var(--icon-left) - var(--icon-size)/2);
@@ -50,11 +49,13 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 .icon-hit.tasks    { top: calc(var(--icon5-top) - var(--icon-size)/2); }
 .icon-hit.photos   { top: calc(var(--icon6-top) - var(--icon-size)/2); }
 
-/* Hover/focus hints */
+/* Subtle hover/focus hint (kept for usability) */
 .icon-hit:hover,
-.icon-hit:focus-visible{ box-shadow: 0 0 0 3px rgba(59,130,246,.35); }
+.icon-hit:focus-visible{
+  box-shadow: 0 0 0 3px rgba(59,130,246,.24);
+}
 
-/* Tooltip */
+/* Minimal tooltip for labels */
 .icon-hit[data-tip]::after{
   content: attr(data-tip);
   position: absolute;
@@ -74,74 +75,12 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 .icon-hit:hover::after,
 .icon-hit:focus-visible::after{ opacity: 1; }
 
-/* Toast */
-#toast{
-  position: absolute;
-  z-index: 8;
-  bottom: 2.5%;
-  left: 16%;
-  right: 3%;
-  max-width: 560px;
-  padding: 10px 14px;
-  font-size: 14px;
-  background: rgba(255,255,255,.86);
-  border-radius: 10px;
-  color: #0f172a;
-  box-shadow: 0 6px 20px rgba(2,8,23,.15);
-  line-height: 1.35;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity .2s ease, transform .2s ease;
-}
-#toast.show{ opacity:1; transform: translateY(0); }
-
-/* Debug mode (red overlays) */
-body.debug .icon-hit{ outline: 2px solid red; background: rgba(255,0,0,.08); }
-
-.debug-toggle{
-  position: absolute;
-  z-index: 11;              /* topmost */
-  top: 10px; right: 10px;
-  padding:6px 10px; font-size:12px;
-  border-radius:8px; border:1px solid rgba(15,23,42,.2);
-  background:#fff; cursor:pointer;
-}
-.debug-toggle[aria-pressed="true"]{ background:#fee2e2; border-color:#ef4444; color:#991b1b; }
-
-/* HUD */
-.hud{
-  position: absolute;
-  z-index: 10;
-  top: 10px; left: 10px;
-  background: rgba(255,255,255,.92); color:#0f172a;
-  border: 1px solid rgba(15,23,42,.12);
-  border-radius: 10px; padding: 8px 10px; min-width: 170px;
-  box-shadow: 0 8px 20px rgba(2,8,23,.12);
-  font: 12px/1.35 system-ui, -apple-system, Segoe UI, Roboto, Arial;
-}
-.hud-row{ display:flex; justify-content:space-between; gap:8px; margin:2px 0; }
-.hud-copy{
-  margin-top:6px; width:100%; padding:6px 8px; font: 600 12px system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  border-radius:8px; border:1px solid rgba(15,23,42,.2); background:#fff; cursor:pointer;
-}
-body:not(.debug) .hud{ display:none; }
-
-.help{
-  position:absolute; z-index:9; bottom:10px; right:10px;
-  background: rgba(0,0,0,.42); color:#fff; font-size:12px;
-  padding:6px 8px; border-radius:8px;
+/* Optional: coarse pointer (touch) – slightly larger targets */
+@media (hover:none) and (pointer:coarse){
+  :root{ --icon-size: 5.2%; }
 }
 
-/* Optional: mobile tweaks */
-@media (max-width:900px){
-  :root{
-    --icon-left: 10.4%;
-    --icon-size: 6.2%;
-    --icon1-top: 23.5%;
-    --icon2-top: 33.5%;
-    --icon3-top: 43.5%;
-    --icon4-top: 53.5%;
-    --icon5-top: 63.5%;
-    --icon6-top: 73.5%;
-  }
+/* If you produce a different mobile artwork later, you can add a mobile-specific block here */
+@media (max-width: 900px){
+  /* defaults are fine unless mobile asset differs materially */
 }
