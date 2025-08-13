@@ -3,25 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SIMPLE – Interactive Background</title>
+  <title>SIMPLE – Opening Video + Feedback</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main class="bg-frame" aria-label="SIMPLE desktop background with app icons">
+  <main class="bg-frame">
     <picture>
       <source srcset="assets/background-mobile.webp" media="(max-width: 900px)">
       <img src="assets/background-desktop.png" alt="" class="bg-img">
     </picture>
 
-    <!-- Overlay hit areas (order: Email, Text, Video, Calendar, Tasks, Photos) -->
     <button class="icon-hit email"    data-tip="Email"    aria-label="Open Email"></button>
     <button class="icon-hit text"     data-tip="Text"     aria-label="Open Text"></button>
     <button class="icon-hit video"    data-tip="Video"    aria-label="Open Video"></button>
     <button class="icon-hit calendar" data-tip="Calendar" aria-label="Open Calendar"></button>
     <button class="icon-hit tasks"    data-tip="Tasks"    aria-label="Open Tasks"></button>
     <button class="icon-hit photos"   data-tip="Photos"   aria-label="Open Photos"></button>
-  </main>
 
+    <section class="video-panel" aria-label="Opening video">
+      <div class="video-inner">
+        <iframe
+          id="synthesiaFrame"
+          src="https://share.synthesia.io/7561f236-13c6-4c4e-a5e7-40e7b2fddd7b"
+          title="Opening video"
+          loading="lazy"
+          allow="autoplay; encrypted-media; picture-in-picture"
+          referrerpolicy="no-referrer"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="video-fallback">
+        <a href="https://share.synthesia.io/7561f236-13c6-4c4e-a5e7-40e7b2fddd7b" target="_blank" rel="noopener">Open video in a new tab</a>
+      </div>
+    </section>
+
+    <aside id="mentorFeedback" class="mentor hidden" role="status" aria-live="polite">
+      <img src="assets/mentor-avatar.jpg" alt="" class="avatar" />
+      <div class="copy">
+        <p><strong>Remember</strong> — how you communicate (both mode and tone) affects how the client perceives you. Think before you engage.</p>
+      </div>
+      <button class="dismiss" aria-label="Dismiss feedback">✕</button>
+    </aside>
+
+  </main>
   <script src="script.js"></script>
 </body>
 </html>
