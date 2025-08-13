@@ -1,65 +1,43 @@
-:root{
-  --icon-left: 7.6%;
-  --icon-size: 4.6%;
-  --icon1-top: 28.2%;
-  --icon2-top: 39.6%;
-  --icon3-top: 51.1%;
-  --icon4-top: 62.7%;
-  --icon5-top: 74.3%;
-  --icon6-top: 85.8%;
+body {
+  margin: 0;
+  background-color: #000;
 }
-body,html{
-  margin:0;
-  padding:0;
-  height:100%;
+.background-container {
+  position: relative;
+  max-width: 100%;
+  display: inline-block;
 }
-.background-container{
-  position:relative;
-  width:100%;
-  height:100vh;
-  overflow:hidden;
+.background-image {
+  display: block;
+  width: 100%;
+  height: auto;
 }
-.background-image{
-  width:100%;
-  height:100%;
-  object-fit:cover;
+.icon-btn {
+  position: absolute;
+  left: 7.8%;
+  width: 4.5%;
+  aspect-ratio: 1 / 1;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
-.icon-btn{
-  position:absolute;
-  left:var(--icon-left);
-  top:var(--top);
-  width:var(--icon-size);
-  aspect-ratio:1/1;
-  background:transparent;
-  border:none;
-  cursor:pointer;
+/* Positions for each icon (percentages from top) */
+#btn-email { top: 23.5%; }
+#btn-text { top: 36.2%; }
+#btn-video { top: 48.9%; }
+#btn-calendar { top: 61.6%; }
+#btn-tasks { top: 74.3%; }
+#btn-photos { top: 87.0%; }
+
+/* Debug style */
+.debug .icon-btn {
+  outline: 2px solid red;
+  background: rgba(255,0,0,0.2);
 }
-.icon-btn:hover::after, .icon-btn:focus::after{
-  content:attr(title);
-  position:absolute;
-  left:110%;
-  top:50%;
-  transform:translateY(-50%);
-  background:#fff;
-  color:#000;
-  padding:4px 8px;
-  border-radius:4px;
-  font-size:0.85rem;
-  white-space:nowrap;
-  box-shadow:0 2px 5px rgba(0,0,0,0.2);
-}
-.toast{
-  position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#333;
-  color:#fff;
-  padding:10px 20px;
-  border-radius:5px;
-  opacity:0;
-  transition:opacity 0.3s ease;
-}
-.toast.show{
-  opacity:1;
+
+.debug-toggle {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
 }

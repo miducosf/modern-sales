@@ -1,29 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMPLE UI Overlay</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple UI Overlay</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <div class="background-container">
-        <picture>
-            <source srcset="assets/background-mobile.webp" media="(max-width: 768px)">
-            <img src="assets/background-desktop.webp" alt="SIMPLE Background" class="background-image">
-        </picture>
-
-        <!-- Invisible buttons overlay -->
-        <button class="icon-btn" style="--top: var(--icon1-top)" title="Email" onclick="openEmail()"></button>
-        <button class="icon-btn" style="--top: var(--icon2-top)" title="Text" onclick="openText()"></button>
-        <button class="icon-btn" style="--top: var(--icon3-top)" title="Video Chat" onclick="openVideo()"></button>
-        <button class="icon-btn" style="--top: var(--icon4-top)" title="Calendar" onclick="openCalendar()"></button>
-        <button class="icon-btn" style="--top: var(--icon5-top)" title="Tasks" onclick="openTasks()"></button>
-        <button class="icon-btn" style="--top: var(--icon6-top)" title="Photos" onclick="openPhotos()"></button>
-    </div>
-
-    <div id="toast" class="toast"></div>
-
-    <script src="script.js"></script>
+  <div class="background-container">
+    <img src="assets/background-desktop.png" alt="Background" class="background-image" />
+    <!-- Icon overlays -->
+    <button class="icon-btn" id="btn-email" title="Email"></button>
+    <button class="icon-btn" id="btn-text" title="Text"></button>
+    <button class="icon-btn" id="btn-video" title="Video Chat"></button>
+    <button class="icon-btn" id="btn-calendar" title="Calendar"></button>
+    <button class="icon-btn" id="btn-tasks" title="Tasks"></button>
+    <button class="icon-btn" id="btn-photos" title="Photos"></button>
+  </div>
+  <button class="debug-toggle">Debug</button>
+  <script src="script.js"></script>
 </body>
 </html>
