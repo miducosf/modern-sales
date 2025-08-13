@@ -2,22 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simple UI Overlay</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SIMPLE – Overlay with Keyboard Nudge</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="background-container">
-    <img src="assets/background-desktop.png" alt="Background" class="background-image" />
-    <!-- Icon overlays -->
-    <button class="icon-btn" id="btn-email" title="Email"></button>
-    <button class="icon-btn" id="btn-text" title="Text"></button>
-    <button class="icon-btn" id="btn-video" title="Video Chat"></button>
-    <button class="icon-btn" id="btn-calendar" title="Calendar"></button>
-    <button class="icon-btn" id="btn-tasks" title="Tasks"></button>
-    <button class="icon-btn" id="btn-photos" title="Photos"></button>
-  </div>
-  <button class="debug-toggle">Debug</button>
+  <main class="bg-frame" aria-label="SIMPLE desktop background with app icons" tabindex="-1">
+    <picture>
+      <source srcset="assets/background-mobile.png" media="(max-width: 900px)">
+      <img src="assets/background-desktop.png" alt="" class="bg-img">
+    </picture>
+
+    <!-- Overlay hit areas -->
+    <button class="icon-hit email"    data-tip="Email"    aria-label="Open Email"><span class="tag">1</span></button>
+    <button class="icon-hit text"     data-tip="Text"     aria-label="Open Text"><span class="tag">2</span></button>
+    <button class="icon-hit video"    data-tip="Video"    aria-label="Open Video"><span class="tag">3</span></button>
+    <button class="icon-hit calendar" data-tip="Calendar" aria-label="Open Calendar"><span class="tag">4</span></button>
+    <button class="icon-hit tasks"    data-tip="Tasks"    aria-label="Open Tasks"><span class="tag">5</span></button>
+    <button class="icon-hit photos"   data-tip="Photos"   aria-label="Open Photos"><span class="tag">6</span></button>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+    <button id="debugToggle" class="debug-toggle" aria-pressed="false" title="Toggle debug (red outlines)">Debug</button>
+    <div class="help">Click page to focus. Keys: 1–6 select • Arrows move • Shift=big steps • S resize • P print</div>
+  </main>
+
   <script src="script.js"></script>
 </body>
 </html>
