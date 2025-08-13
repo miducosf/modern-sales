@@ -1,7 +1,7 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: url('simple_background.png') no-repeat center center fixed; background-size: cover;
+    background: url('simple-bg.png') no-repeat center center fixed; background-size: cover;
 }
 #desktop {
     display: flex;
