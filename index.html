@@ -32,5 +32,127 @@
     </div>
   </div>
   <script src="script.js"></script>
+  <script>
+(async function(){
+  // 1) Load content.json
+  const content = await fetch('assets/content.json').then(r=>r.json());
+
+  // 2) Simple in‑page renderer (inside the video area if present, else fallback body)
+  const container = document.querySelector('.video-wrap') || document.body;
+
+  function showPanel(html){
+    let panel = document.getElementById('choicePanel');
+    if (!panel){
+      panel = document.createElement('div');
+      panel.id = 'choicePanel';
+      panel.style.cssText = `
+        position:absolute; inset:auto 0 0 0; transform:translateY(110%);
+        max-width:700px; margin: 8px auto 0; left:0; right:0;
+        background:rgba(255,255,255,.96); border-radius:14px; padding:14px 16px;
+        box-shadow:0 12px 28px rgba(2,8,23,.2); transition:transform .25s ease;
+        font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Arial; color:#0f172a;`;
+      container.appendChild(panel);
+      // slide up
+      requestAnimationFrame(()=> panel.style.transform = 'translateY(0)');
+    }
+    panel.innerHTML = html;
+  }
+
+  function showMentor(text){
+    const card = document.getElementById('mentorFeedback') || document.querySelector('#mentor, .mentor');
+    if (!card) return;
+    const copy = card.querySelector('.copy') || card.querySelector('.mentor-text');
+    if (copy) copy.textContent = text;
+    card.classList.add('show'); // uses your fade-in
+    card.removeAttribute('aria-hidden');
+  }
+
+  function chooseOutcome(choiceId){
+    const good = new Set(content.routingRules.positiveIds);
+    return good.has(choiceId) ? 'positive' : 'negative';
+  }
+
+  function goFinal(choiceId){
+    // Optional: show transition manager line somewhere subtle
+    console.log(content.transition.managerLine);
+
+    const path = chooseOutcome(choiceId);
+    const final = content.videoFinal[path];
+    // Display the client's final line inside the choice panel
+    showPanel(`
+      <div style="display:flex; gap:10px; align-items:flex-start">
+        <div style="font-weight:600">Jamie:</div>
+        <div>${final.clientVideoText}</div>
+      </div>
+    `);
+    // Mentor feedback (fade-in)
+    showMentor(final.mentorFeedback);
+    // (You can also cue a final video segment here if you record separate clips.)
+  }
+
+  function renderOptions(block){
+    // For email/text options with learnerText
+    const rows = block.options.map(opt => `
+      <div style="padding:10px 0; border-top:1px solid rgba(2,8,23,.08)">
+        <div style="font-weight:600; margin-bottom:6px">${opt.label}</div>
+        ${opt.learnerText ? `<div style="margin-bottom:8px">${opt.learnerText}</div>` : ''}
+        <button data-id="${opt.id}" style="padding:8px 10px; border-radius:10px; border:1px solid rgba(2,8,23,.15); background:#f8fafc; cursor:pointer">Send</button>
+      </div>
+    `).join('');
+    showPanel(`<div><div style="font-size:12px; opacity:.7; margin-bottom:6px">${block.title}</div>${rows}</div>`);
+
+    document.querySelectorAll('#choicePanel [data-id]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.getAttribute('data-id');
+        const opt = block.options.find(o=>o.id===id);
+        // show client response inline
+        showPanel(`
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <div><span style="font-weight:600">You:</span> ${opt.learnerText || ''}</div>
+            <div><span style="font-weight:600">Jamie:</span> ${opt.clientResponse}</div>
+          </div>
+        `);
+        // mentor feedback
+        showMentor(opt.mentorFeedback);
+        // next (final)
+        goFinal(id);
+      });
+    });
+  }
+
+  function renderVideoImmediate(block){
+    showPanel(`
+      <div style="display:flex; flex-direction:column; gap:12px">
+        <div><span style="font-weight:600">Jamie:</span> ${block.clientLine}</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          ${block.options.map(o=>`<button data-id="${o.id}" style="padding:8px 10px; border-radius:10px; border:1px solid rgba(2,8,23,.15); background:#f8fafc; cursor:pointer">${o.label}</button>`).join('')}
+        </div>
+      </div>
+    `);
+    document.querySelectorAll('#choicePanel [data-id]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.getAttribute('data-id');
+        const opt = block.options.find(o=>o.id===id);
+        // show learner line
+        showPanel(`
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <div><span style="font-weight:600">You:</span> ${opt.learnerLine}</div>
+          </div>
+        `);
+        showMentor(opt.mentorFeedback);
+        goFinal(id);
+      });
+    });
+  }
+
+  // 3) Hook into your existing icon click API
+  window.SIMPLE = Object.assign(window.SIMPLE || {}, {
+    openEmail(){ renderOptions(content.interactions.email); },
+    openText(){ renderOptions(content.interactions.text); },
+    openVideo(){ renderVideoImmediate(content.interactions.videoImmediate); }
+  });
+})();
+</script>
+
 </body>
 </html>
