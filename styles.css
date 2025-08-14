@@ -1,67 +1,92 @@
-:root{
-  --icon-left: 9.10%;
-  --icon-size: 4.60%;
-  --icon1-top: 23.50%;
-  --icon2-top: 34.40%;
-  --icon3-top: 44.30%;
-  --icon4-top: 54.80%;
-  --icon5-top: 64.90%;
-  --icon6-top: 75.10%;
-}
-
-html, body { height: 100%; }
-body {
+body, html {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  background:#0b3b88;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #0b4f78;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.bg-frame { position: relative; max-width: 1366px; margin: 0 auto; line-height: 0; }
-.bg-img { width: 100%; height: auto; display:block; user-select:none; pointer-events:none; }
+.background {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+}
 
-.icon-hit{ position:absolute; width:var(--icon-size); aspect-ratio:1/1; left: calc(var(--icon-left) - var(--icon-size)/2); top:0; background:transparent; border:none; border-radius:12px; cursor:pointer; }
-.icon-hit.email    { top: calc(var(--icon1-top) - var(--icon-size)/2); }
-.icon-hit.text     { top: calc(var(--icon2-top) - var(--icon-size)/2); }
-.icon-hit.video    { top: calc(var(--icon3-top) - var(--icon-size)/2); }
-.icon-hit.calendar { top: calc(var(--icon4-top) - var(--icon-size)/2); }
-.icon-hit.tasks    { top: calc(var(--icon5-top) - var(--icon-size)/2); }
-.icon-hit.photos   { top: calc(var(--icon6-top) - var(--icon-size)/2); }
-.icon-hit:hover, .icon-hit:focus-visible{ box-shadow: 0 0 0 3px rgba(59,130,246,.22); }
+.bg-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
 
-.video-panel{
-  position:absolute;
+.icon-overlays {
+  position: absolute;
+  left: 9.1%;
+  width: 4.6%;
+  top: 0;
+}
+
+.icon-btn {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: transparent;
+  border: 2px solid transparent; /* toggle to red for debug */
+  cursor: pointer;
+}
+
+.video-wrap {
+  position: absolute;
   left: 24.5%;
-  top: 16.5%;
+  top: 15.8%;
   width: 56%;
-  aspect-ratio: 16 / 9;
-  border-radius: 16px;
-  box-shadow: 0 10px 24px rgba(2,8,23,.2);
-  overflow:hidden;
-  background:#e9eef3;
 }
-.video-inner, .video-inner iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
-.video-fallback{ position:absolute; bottom:6px; left:10px; right:10px; text-align:center; font-size:12px; color:#0f172a; background:rgba(255,255,255,.7); border-radius:8px; padding:4px 8px; pointer-events:none; }
 
-.mentor{
-  position:absolute;
-  left: 24.5%;
-  bottom: 8%;
-  max-width: 58%;
-  display:flex; align-items:center; gap:14px;
-  padding:14px 16px 14px 14px;
-  background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.90));
-  border-radius: 16px;
-  box-shadow: 0 14px 30px rgba(2,8,23,.20);
-  color:#0f172a; line-height:1.35;
+#play-hint {
+  color: white;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  text-align: center;
+  font-family: Arial, sans-serif;
 }
-.mentor.hidden{ display:none; }
-.mentor .avatar{ width:56px; height:56px; border-radius:50%; object-fit:cover; flex:0 0 auto; box-shadow: 0 2px 8px rgba(2,8,23,.15); }
-.mentor .copy{ font-size:16px; }
-.mentor .dismiss{ margin-left:auto; border:none; background:transparent; font-size:18px; line-height:1; cursor:pointer; color:#475569; }
 
-@media (max-width: 900px){
-  .video-panel{ left: 13%; top: 18%; width: 74%; }
-  .mentor{ left: 10%; right:10%; max-width: none; bottom: 6%; }
-  .mentor .copy{ font-size:14px; }
-  :root{ --icon-size:5.2%; }
+video {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.mentor {
+  display: flex;
+  align-items: center;
+  margin: 10px auto 0;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  width: 90%;
+  max-width: 700px;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.mentor.show {
+  opacity: 1;
+}
+
+.mentor-avatar {
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  margin-right: 12px;
+}
+
+.mentor-text {
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  color: #333;
 }

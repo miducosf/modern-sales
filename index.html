@@ -2,50 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SIMPLE – Opening Video + Feedback</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simple Video Overlay</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main class="bg-frame">
-    <picture>
-      <source srcset="assets/background-mobile.webp" media="(max-width: 900px)">
-      <img src="assets/background-desktop.png" alt="" class="bg-img">
-    </picture>
-
-    <button class="icon-hit email"    data-tip="Email"    aria-label="Open Email"></button>
-    <button class="icon-hit text"     data-tip="Text"     aria-label="Open Text"></button>
-    <button class="icon-hit video"    data-tip="Video"    aria-label="Open Video"></button>
-    <button class="icon-hit calendar" data-tip="Calendar" aria-label="Open Calendar"></button>
-    <button class="icon-hit tasks"    data-tip="Tasks"    aria-label="Open Tasks"></button>
-    <button class="icon-hit photos"   data-tip="Photos"   aria-label="Open Photos"></button>
-
-    <section class="video-panel" aria-label="Opening video">
-      <div class="video-inner">
-        <iframe
-          id="synthesiaFrame"
-          src="https://share.synthesia.io/7561f236-13c6-4c4e-a5e7-40e7b2fddd7b"
-          title="Opening video"
-          loading="lazy"
-          allow="autoplay; encrypted-media; picture-in-picture"
-          referrerpolicy="no-referrer"
-          allowfullscreen>
-        </iframe>
+  <div class="background">
+    <img src="assets/background-desktop.png" alt="Background" class="bg-image" />
+    <div class="icon-overlays">
+      <button title="Email" class="icon-btn" style="top: 23.5%;"></button>
+      <button title="Chat" class="icon-btn" style="top: 34.4%;"></button>
+      <button title="Video" class="icon-btn" style="top: 44.3%;"></button>
+      <button title="Calendar" class="icon-btn" style="top: 54.8%;"></button>
+      <button title="Tasks" class="icon-btn" style="top: 64.9%;"></button>
+      <button title="Portfolio" class="icon-btn" style="top: 75.1%;"></button>
+    </div>
+    <div class="video-wrap">
+      <div id="play-hint">Select play to begin.</div>
+      <video id="trainingVideo" poster="assets/video-poster.jpg" controls>
+        <source src="assets/sales-opener.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <div id="mentor" class="mentor hidden">
+        <img src="assets/sales-manager.jpg" alt="Mentor" class="mentor-avatar" />
+        <div class="mentor-text">
+          Remember – how you communicate both mode and tone can affect how the client perceives you. Think before you engage.
+        </div>
       </div>
-      <div class="video-fallback">
-        <a href="https://share.synthesia.io/7561f236-13c6-4c4e-a5e7-40e7b2fddd7b" target="_blank" rel="noopener">Open video in a new tab</a>
-      </div>
-    </section>
-
-    <aside id="mentorFeedback" class="mentor hidden" role="status" aria-live="polite">
-      <img src="assets/mentor-avatar.jpg" alt="" class="avatar" />
-      <div class="copy">
-        <p><strong>Remember</strong> — how you communicate (both mode and tone) affects how the client perceives you. Think before you engage.</p>
-      </div>
-      <button class="dismiss" aria-label="Dismiss feedback">✕</button>
-    </aside>
-
-  </main>
+    </div>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>
