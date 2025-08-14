@@ -1,0 +1,104 @@
+{
+  "meta": {
+    "version": "1.0",
+    "project": "Sales Communication CYOA",
+    "clientName": "Jamie",
+    "clientCompany": "ACME Corp"
+  },
+  "opening": {
+    "managerVideo": {
+      "src": "assets/sales-opener.mp4",
+      "hint": "Select play to begin."
+    },
+    "mentorIntro": "How you communicate — both the channel and your tone — can shape how the client sees you. Choose wisely."
+  },
+  "interactions": {
+    "email": {
+      "id": "email",
+      "title": "Email",
+      "options": [
+        {
+          "id": "email_good",
+          "label": "Good Email (empathetic + professional)",
+          "learnerText": "Hi Jamie, I understand your concerns about pricing and delivery. Let’s discuss how we can address these points so you’re confident moving forward.",
+          "clientResponse": "Thanks for the thoughtful reply. I do want to talk this through in more detail. Can we set up a quick video call?",
+          "mentorFeedback": "Strong move. You acknowledged the concern and kept the door open for conversation. This sets a constructive tone.",
+          "next": "video_final"
+        },
+        {
+          "id": "email_curt",
+          "label": "Curt Email (short, transactional)",
+          "learnerText": "Jamie, pricing and delivery are as quoted. Let me know if you want to discuss further.",
+          "clientResponse": "I think we do need to talk — I have major concerns. Can we set up a call?",
+          "mentorFeedback": "Direct, but it risks sounding dismissive. With sensitive clients, warmth and empathy go a long way.",
+          "next": "video_final"
+        }
+      ]
+    },
+    "text": {
+      "id": "text",
+      "title": "Text Message",
+      "options": [
+        {
+          "id": "text_reassuring",
+          "label": "Reassuring Text",
+          "learnerText": "Hi Jamie — I saw your note. Let’s talk about your concerns and find the best solution.",
+          "clientResponse": "Thanks — let’s set up a video call later today.",
+          "mentorFeedback": "Nice job. Even in a short format, you conveyed openness and flexibility.",
+          "next": "video_final"
+        },
+        {
+          "id": "text_call_request",
+          "label": "Call Request Text",
+          "learnerText": "Hi Jamie — I saw your concerns. Can you jump on a video call now?",
+          "clientResponse": "Yes, I’m available — let’s talk.",
+          "mentorFeedback": "This is efficient, but be careful not to rush. Some clients need a bit of transition before diving into a call.",
+          "next": "video_final"
+        }
+      ]
+    },
+    "videoImmediate": {
+      "id": "video_now",
+      "title": "Video Call (immediate)",
+      "clientLine": "Hey there, I appreciate you jumping right in. I’m concerned about how the delays and pricing changes will affect our launch.",
+      "options": [
+        {
+          "id": "video_partnership",
+          "label": "Partnering response",
+          "learnerLine": "Let’s review your priorities together and see what adjustments we can make.",
+          "mentorFeedback": "Excellent. You’re framing it as a partnership.",
+          "next": "video_final"
+        },
+        {
+          "id": "video_terms_rigid",
+          "label": "Rigid response",
+          "learnerLine": "Our terms are set, but I can walk you through them.",
+          "mentorFeedback": "Clear, but risks sounding rigid.",
+          "next": "video_final"
+        }
+      ]
+    }
+  },
+  "transition": {
+    "managerLine": "You’ve set the tone with your initial communication. After discussing the challenges Jamie and ACME are facing, your video call wraps up with the following…"
+  },
+  "videoFinal": {
+    "positive": {
+      "id": "final_positive",
+      "clientVideoText": "Thanks for taking the time to talk this through. I feel much better about moving forward.",
+      "mentorFeedback": "This is great news! You kept a warm, professional tone and adapted to the client’s needs. Great job!"
+    },
+    "negative": {
+      "id": "final_negative",
+      "clientVideoText": "I understand your position, but I’m still concerned. Let’s pause and revisit this next week.",
+      "mentorFeedback": "Not the best outcome. Your initial tone made it harder to build rapport. Think about how to connect before moving into problem-solving."
+    }
+  },
+  "wrapUp": {
+    "managerLine": "As a sales professional, you’re the face of our company and set the tone for every client interaction. How you communicate — both your choice of channel and the tone you use — can shape client perception and determine whether we close a deal. Be warm, be professional, and be ready to adapt to your client’s needs. Thanks for taking a few minutes to sharpen your sales skills and help make ACME a success."
+  },
+  "routingRules": {
+    "positiveIds": ["email_good", "text_reassuring", "video_partnership"],
+    "negativeIds": ["email_curt", "text_call_request", "video_terms_rigid"]
+  }
+}
