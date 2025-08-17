@@ -10,14 +10,14 @@
 <body>
   <main class="bg-frame">
     <picture>
-      <source src="assets/background-mobile.webp" media="(max-width: 900px)">
+      <source srcset="assets/background-mobile.webp" media="(max-width: 900px)">
       <img src="assets/background-desktop.png" alt="" class="bg-img">
     </picture>
 
     <!-- Overlay logo reset (transparent hit area on Simple logo) -->
     <button class="logo-reset" aria-label="Reset to beginning" data-tip="Reset"></button>
 
-    <!-- Invisible icon hit areas -->
+    <!-- Invisible icon hit areas (with tooltips) -->
     <button class="icon-hit email"    data-tip="Email"    aria-label="Open Email"></button>
     <button class="icon-hit text"     data-tip="Text"     aria-label="Open Text"></button>
     <button class="icon-hit video"    data-tip="Video"    aria-label="Open Video"></button>
@@ -47,6 +47,11 @@
         <img src="assets/sales-manager.jpg" alt="" class="avatar" />
         <div class="copy" id="mentorCopy">I’ll appear here with feedback and guidance throughout your choices.</div>
       </aside>
+
+      <!-- Flow action below feedback bar (appears after Done selection) -->
+      <div id="flowActions" class="flow-actions hidden">
+        <button id="continueBtn" class="continue-btn" aria-label="Continue to closing insights">Continue</button>
+      </div>
     </section>
   </main>
 
