@@ -11,6 +11,7 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:#0b3b88; }
+.hidden { display: none !important; }
 
 .bg-frame { position: relative; max-width: 1366px; margin: 0 auto; line-height: 0; }
 .bg-img { width: 100%; height: auto; display:block; user-select:none; pointer-events:none; }
@@ -47,7 +48,63 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 }
 #choiceMount > .panel.show{ transform: translateY(0); }
 
-/* Static mentor panel */
+.panel h3{ margin: 0 0 8px; font-size: 14px; }
+.panel .row{ display:flex; gap:12px; flex-wrap:wrap; }
+
+/* Reusable cards */
+.card{
+  background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:12px;
+  box-shadow:0 6px 14px rgba(2,8,23,.10); flex:1 1 220px; cursor:pointer;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.card:hover{ transform: translateY(-2px); box-shadow:0 12px 24px rgba(2,8,23,.16); }
+.card.selected{ border-color:#93c5fd; box-shadow:0 0 0 3px rgba(59,130,246,.20); }
+
+/* Email card bits */
+.email .subject{ font-weight:700; color:#0b3b88; margin-bottom:6px; }
+.email .sender{ font-size:12px; color:#6b7280; margin-bottom:6px; }
+.email .snippet{ font-size:13px; color:#0f172a; }
+
+/* Text cards */
+.chat .meta{ font-weight:600; margin-bottom:6px; color:#334155; }
+.chat .bubble{ background:#f1f5f9; border:1px solid #e5e7eb; border-radius:10px; padding:8px; font-size:13px; }
+
+/* Video choice panel */
+.video-choices .small-video{
+  width:100%; aspect-ratio:16/9; background:#000; border-radius:12px; overflow:hidden;
+  box-shadow:0 6px 14px rgba(2,8,23,.14); margin-bottom:10px;
+}
+.video-choices .controls{ display:flex; gap:8px; flex-wrap:wrap; }
+.btn{
+  border:none; border-radius:999px; padding:8px 12px; font-size:13px; cursor:pointer;
+}
+.btn.primary{ background:#0b3b88; color:#fff; }
+.btn.ghost{ background:#eef2f7; color:#0f172a; border:1px solid #e5e7eb; }
+
+/* Calendar compact */
+.calendar .grid{ position:relative; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; }
+.calendar .head{ display:grid; grid-template-columns:60px repeat(5,1fr); background:#f8fafc; border-bottom:1px solid #e5e7eb; }
+.calendar .cell{ padding:6px; font-weight:600; font-size:12px; text-align:center; border-left:1px solid #e5e7eb; }
+.calendar .body{ display:grid; grid-template-columns:60px repeat(5,1fr); height:220px; position:relative; }
+.calendar .times{ background:#f1f5f9; border-right:1px solid #e5e7eb; font-size:11px; color:#64748b; display:flex; flex-direction:column; justify-content:space-between; padding:6px 4px; z-index:2; }
+.calendar .day{ position:relative; border-left:1px solid #e5e7eb; }
+.calendar .meeting{ position:absolute; left:4px; right:4px; border-radius:8px; padding:2px 6px; font-size:11px; color:#fff; }
+.calendar .cat1{ background:#2a5d9f } .calendar .cat2{ background:#3b82f6 } .calendar .cat3{ background:#2563eb } .calendar .cat4{ background:#1d4ed8 } .calendar .cat5{ background:#60a5fa; color:#0f172a }
+.calendar .div{ position:absolute; left:60px; right:0; height:1px; background:#e5e7eb; z-index:1 }
+
+/* Tasks */
+.tasks .item{ display:flex; gap:10px; align-items:flex-start; padding:10px; border-radius:10px; background:#fff; border:1px solid #e5e7eb; margin-bottom:8px; }
+.tasks .checkbox{ width:18px; height:18px; border-radius:4px; border:2px solid #0b3b88; display:grid; place-items:center; flex:0 0 18px }
+.tasks .tick{ width:10px; height:10px; background:#0b3b88; opacity:0; transition:opacity .12s ease }
+.tasks .done .tick{ opacity:1 } .tasks .done .label{ text-decoration:line-through; color:#6b7280 }
+
+/* Clients / photos */
+.clients .grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+.clients button{ border:1px solid #e5e7eb; background:#fff; border-radius:12px; overflow:hidden; padding:0; cursor:pointer; }
+.clients img{ width:100%; height:140px; object-fit:cover; display:block; }
+.clients .badge{ position:absolute; top:8px; left:8px; padding:2px 8px; background:#ffffffdd; border:1px solid #e5e7eb; border-radius:999px; font-size:12px; }
+
+/* Mentor */
 .mentor{
   margin: 12px auto 0;
   max-width: 700px;
@@ -60,6 +117,10 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 }
 .mentor .avatar{ width:56px; height:56px; border-radius:50%; object-fit:cover; flex:0 0 auto; box-shadow: 0 2px 8px rgba(2,8,23,.15); }
 .mentor .copy{ font-size:16px; }
+
+/* Subtle fade utility */
+.fade-in{ animation:fade .28s ease forwards; }
+@keyframes fade{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
 
 @media (max-width: 900px){
   .video-wrap{ left:12%; top:18%; width:76%; }
