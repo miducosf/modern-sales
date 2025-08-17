@@ -11,11 +11,12 @@
   const iconButtons = Array.from(document.querySelectorAll('.icon-hit'));
   const doneBtn = document.getElementById('doneBtn');
   const logoReset = document.querySelector('.logo-reset');
+  const flowActions = document.getElementById('flowActions');
+  const continueBtn = document.getElementById('continueBtn');
 
   // State
   const STATE = {
     canInteract: false,
-    videoOutcome: null, // from the Video channel (not required anymore, but kept for reference)
     unlockedByTime: false
   };
 
@@ -92,76 +93,67 @@
 
   function renderClosingSelector() {
     choiceMount.innerHTML = '';
-    const panel = document.createElement('div');
-    panel.className = 'panel fade-in';
-    panel.innerHTML = `
-      <h3>How did Jamie respond?</h3>
-      <div class="row">
-        <div class="card" data-close="positive"><strong>Positive wrap-up</strong><br/>“Thanks for talking—feeling good about moving forward.”</div>
-        <div class="card" data-close="negative"><strong>Concerned wrap-up</strong><br/>“Still concerned—let’s pause and revisit next week.”</div>
-      </div>
-    `;
-    panel.querySelectorAll('.card').forEach(card => {
-      card.addEventListener('click', () => {
-        panel.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        const outcome = card.getAttribute('data-close');
-        playJamieClosing(outcome);
-      });
-    });
-    choiceMount.appendChild(panel);
-    requestAnimationFrame(() => panel.classList.add('show'));
-    mentorCopy.textContent = "Pick which closing you’d like to see. You can revisit channels anytime and press Done again.";
-  }
+    flowActions.classList.add('hidden'); // hide continue until a selection is made
 
-  function playJamieClosing(outcome) {
-    const src = outcome === 'positive'
-      ? 'assets/05_Jamie_Closing_Positive.mp4'
-      : 'assets/06_Jamie_Closing_Negative.mp4';
-
-    choiceMount.innerHTML = '';
     const panel = document.createElement('div');
     panel.className = 'panel fade-in video-choices';
     panel.innerHTML = `
-      <h3>Jamie – Closing</h3>
-      <div class="small-video">
-        <video id="jamieClose" preload="metadata" playsinline controls>
-          <source src="${src}" type="video/mp4">
-        </video>
-      </div>
-      <div class="controls">
-        <button class="btn primary" id="toManager" disabled>Continue</button>
+      <h3>How did Jamie respond to your conversation?</h3>
+      <div class="row" style="gap:16px; align-items:flex-start;">
+        <div style="flex:1; min-width:260px;">
+          <div class="small-video">
+            <video preload="metadata" playsinline>
+              <source src="assets/05_Jamie_Closing_Positive.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div style="display:flex; justify-content:center;">
+            <button class="btn ghost" data-close="positive">Response A</button>
+          </div>
+        </div>
+        <div style="flex:1; min-width:260px;">
+          <div class="small-video">
+            <video preload="metadata" playsinline>
+              <source src="assets/06_Jamie_Closing_Negative.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div style="display:flex; justify-content:center;">
+            <button class="btn ghost" data-close="negative">Response B</button>
+          </div>
+        </div>
       </div>
     `;
-    choiceMount.appendChild(panel);
-    requestAnimationFrame(() => panel.classList.add('show'));
-
-    const vid = panel.querySelector('#jamieClose');
-    const toManager = panel.querySelector('#toManager');
-
-    // Provide mentor feedback immediately based on outcome
-    if (outcome === 'positive') {
-      mentorCopy.textContent = "This is great news! You kept a warm, professional tone and adapted to the client’s needs. Great job.";
-    } else {
-      mentorCopy.textContent = "Not the best outcome. Your initial tone made it harder to build rapport. Try connecting before problem-solving.";
-    }
-
-    // Enable "Continue" after Jamie closing ends
-    vid.addEventListener('ended', () => {
-      toManager.disabled = false;
+    panel.querySelectorAll('button[data-close]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const outcome = btn.getAttribute('data-close');
+        // Give feedback immediately in mentor bar and show Continue
+        if (outcome === 'positive') {
+          mentorCopy.textContent = "This is great news! You kept a warm, professional tone and adapted to the client’s needs. Great job.";
+        } else {
+          mentorCopy.textContent = "Not the best outcome. Your initial tone made it harder to build rapport. Try connecting before problem-solving.";
+        }
+        flowActions.classList.remove('hidden');
+        continueBtn.focus();
+      });
     });
 
-    toManager.addEventListener('click', () => playManagerWrapUp());
+    choiceMount.appendChild(panel);
+    requestAnimationFrame(() => panel.classList.add('show'));
+    mentorCopy.textContent = "Pick which closing you’d like to see. You’ll get feedback here, then press Continue to see closing insights.";
   }
+
+  continueBtn.addEventListener('click', () => {
+    flowActions.classList.add('hidden');
+    playManagerWrapUp();
+  });
 
   function playManagerWrapUp() {
     choiceMount.innerHTML = '';
     const panel = document.createElement('div');
     panel.className = 'panel fade-in video-choices';
     panel.innerHTML = `
-      <h3>Sales Manager – Wrap-Up</h3>
+      <h3>Closing insights</h3>
       <div class="small-video">
-        <video id="mgrClose" preload="metadata" playsinline controls>
+        <video id="mgrClose" preload="metadata" playsinline autoplay controls>
           <source src="assets/04_Manager_WrapUp.mp4" type="video/mp4">
         </video>
       </div>
@@ -178,7 +170,7 @@
     const onEnd = () => {
       mentor.classList.remove('hidden');
       mentor.setAttribute('aria-hidden', 'false');
-      mentorCopy.textContent = "Thanks for completing the scenario! You can keep exploring channels or press Done again to replay closings.";
+      mentorCopy.textContent = "Thanks for completing the scenario! You can keep exploring channels or press Done again to revisit closings.";
       vid.removeEventListener('ended', onEnd);
     };
     vid.addEventListener('ended', onEnd);
@@ -187,6 +179,7 @@
   // ---------- Channel renderers ----------
   function mountPanel(kind) {
     choiceMount.innerHTML = '';
+    flowActions.classList.add('hidden');
     const panel = document.createElement('div');
     panel.className = 'panel fade-in';
 
@@ -231,20 +224,18 @@
     mentorCopy.textContent = "Pick the email that best balances warmth and clarity. Aim for an easy ‘yes’ to a brief call.";
   }
 
-  // TEXT
+  // TEXT (updated)
   function renderText(el) {
     el.innerHTML = `
-      <h3>Text – quick coordination</h3>
+      <h3>Text – choose your message</h3>
       <div class="row">
         <div class="card chat" data-feedback="Friendly, low-friction nudge that keeps momentum.">
-          <div class="meta">Jamie (Online)</div>
+          <div class="meta">Jamie from Level</div>
           <div class="bubble">Morning! Would a quick 2pm check-in help us sort the rollout questions?</div>
-          <div class="bubble" style="margin-top:6px;">I can share a short clip and next steps.</div>
         </div>
         <div class="card chat" data-feedback="Reads rushed; consider adding empathy before logistics.">
-          <div class="meta">Jamie (Typing…)</div>
+          <div class="meta">Jamie from Level</div>
           <div class="bubble">I booked 2pm. We’ll run through the plan and lock timelines.</div>
-          <div class="bubble" style="margin-top:6px;">Sounds good — I’ll push the deck.</div>
         </div>
       </div>
     `;
@@ -258,48 +249,42 @@
     mentorCopy.textContent = "Texts work for quick nudges. Lead with empathy before logistics.";
   }
 
-  // VIDEO (preview/branching practice)
+  // VIDEO (updated: no control row; options appear at start; concrete responses)
   function renderVideo(el) {
     el.classList.add('video-choices');
     el.innerHTML = `
-      <h3>Video – final call & response</h3>
+      <h3>Video – how would you respond?</h3>
       <div class="small-video">
         <video id="scenarioVideo" preload="metadata" playsinline controls>
           <source src="assets/01_Jamie_Connect.mp4" type="video/mp4">
         </video>
       </div>
-      <div class="controls" style="margin-bottom:10px;">
-        <button class="btn primary" id="playConnect">Play “Connect/Answer”</button>
-        <button class="btn ghost" id="showOptions">Show Options</button>
-        <button class="btn ghost" id="replay">Replay</button>
-      </div>
       <div class="row" id="optionsRow" style="display:none;">
-        <div class="card" id="optPos" data-outcome="positive"><strong>Response A</strong><br/>Warm acknowledgment + concrete next step.</div>
-        <div class="card" id="optNeg" data-outcome="negative"><strong>Response B</strong><br/>Solution-first; lighter on rapport.</div>
+        <div class="card" data-outcome="positive">
+          <strong>Response A</strong><br/>
+          “I hear where you’re coming from, Jamie. Let’s slow the rollout and add a mid-week check-in so your team feels supported. Does Tuesday 10am work?”
+        </div>
+        <div class="card" data-outcome="negative">
+          <strong>Response B</strong><br/>
+          “We can still hit the date if we move fast. If you approve steps 1–4 today, we’ll lock the timeline and push ahead.”
+        </div>
       </div>
     `;
 
     const vid = el.querySelector('#scenarioVideo');
-    const playConnect = el.querySelector('#playConnect');
-    const showOptions = el.querySelector('#showOptions');
-    const replay = el.querySelector('#replay');
     const optionsRow = el.querySelector('#optionsRow');
 
-    playConnect.addEventListener('click', () => {
-      swapVideo(vid, 'assets/01_Jamie_Connect.mp4');
-      mentorCopy.textContent = "Later that day — video call with Jamie.";
-      optionsRow.style.display = 'none';
-      vid.play().catch(()=>{});
-    });
-
-    showOptions.addEventListener('click', () => {
+    // Show options when video begins to play; fall back to showing immediately if autoplay is blocked
+    const revealOptions = () => {
       optionsRow.style.display = 'flex';
-      mentorCopy.textContent = "Choose the best response to close positively.";
-    });
+      mentorCopy.textContent = "Listen for the concern, then choose the response you’d lead with.";
+    };
 
-    replay.addEventListener('click', () => {
-      vid.currentTime = 0; vid.play().catch(()=>{});
-      optionsRow.style.display = 'none';
+    vid.addEventListener('play', revealOptions, { once: true });
+    // Try to start playback (may be blocked depending on browser policy)
+    vid.play().catch(() => {
+      // If play is blocked, still reveal choices so user can proceed
+      revealOptions();
     });
 
     optionsRow.addEventListener('click', (e) => {
@@ -308,8 +293,7 @@
       optionsRow.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
 
-      const outcome = card.dataset.outcome;
-      if (outcome === 'positive') {
+      if (card.dataset.outcome === 'positive') {
         swapVideo(vid, 'assets/02_Jamie_Positive.mp4');
         mentorCopy.textContent = "Great news! Your warm tone and adaptive answers built trust.";
       } else {
@@ -318,8 +302,6 @@
       }
       vid.play().catch(()=>{});
     });
-
-    mentorCopy.textContent = "This is the final call with Jamie. Start with Connect/Answer, then pick a response.";
   }
 
   function swapVideo(videoEl, src) {
@@ -373,34 +355,38 @@
     mentorCopy.textContent = "Jam-packed week! Propose a low-friction time to connect—acknowledge their constraints.";
   }
 
-  // TASKS
+  // TASKS (updated look: real list with checkboxes)
   function renderTasks(el) {
     el.classList.add('tasks');
     el.innerHTML = `
       <h3>Tasks</h3>
-      <div class="item"><div class="checkbox"><div class="tick"></div></div><div class="label">Send follow-up email to client</div></div>
-      <div class="item"><div class="checkbox"><div class="tick"></div></div><div class="label">Review Q3 budget proposal</div></div>
-      <div class="item"><div class="checkbox"><div class="tick"></div></div><div class="label">Finalize training slide deck</div></div>
-      <div class="item"><div class="checkbox"><div class="tick"></div></div><div class="label">Schedule team sync</div></div>
-      <div class="item" id="egg"><div class="checkbox"><div class="tick"></div></div><div class="label"><strong>Complete paperwork to hire Michael Coleman.</strong> 🐣</div></div>
-      <div class="item"><div class="checkbox"><div class="tick"></div></div><div class="label">Update performance dashboard</div></div>
+      <ul class="tasklist">
+        <li><input id="t1" type="checkbox"><label for="t1">Send follow-up email to client</label></li>
+        <li><input id="t2" type="checkbox"><label for="t2">Finalize training slide deck</label></li>
+        <li><input id="t3" type="checkbox"><label for="t3"><strong>Complete paperwork to hire Michael Coleman.</strong> 🐣</label></li>
+        <li><input id="t4" type="checkbox"><label for="t4">Share draft rollout timeline with Jamie</label></li>
+        <li><input id="b1" type="checkbox" disabled><label for="b1">&nbsp;</label></li>
+        <li><input id="b2" type="checkbox" disabled><label for="b2">&nbsp;</label></li>
+        <li><input id="b3" type="checkbox" disabled><label for="b3">&nbsp;</label></li>
+      </ul>
     `;
-    el.querySelectorAll('.item').forEach(item => {
-      item.addEventListener('click', () => {
-        item.classList.toggle('done');
-        mentorCopy.textContent = item.id === 'egg' && item.classList.contains('done')
-          ? "Nice catch — that one’s important! 🎉"
-          : "Good progress. Keep the momentum rolling.";
+    el.querySelectorAll('.tasklist input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        if (cb.id === 't3' && cb.checked) {
+          mentorCopy.textContent = "Nice catch — that one’s important! 🎉";
+        } else {
+          mentorCopy.textContent = "Good progress. Keep the momentum rolling.";
+        }
       });
     });
-    mentorCopy.textContent = "Use this list to keep momentum between touches.";
+    mentorCopy.textContent = "Keep momentum with quick, visible wins. Check things off as you go.";
   }
 
-  // CLIENTS
+  // CLIENTS (title update)
   function renderClients(el) {
     el.classList.add('clients');
     el.innerHTML = `
-      <h3>Clients</h3>
+      <h3>Client Portfolio</h3>
       <div class="grid">
         <button class="client" data-key="al"><img src="assets/headshot1.png" alt="Healthcare client headshot"><span class="badge">Healthcare</span></button>
         <button class="client" data-key="bk"><img src="assets/headshot2.png" alt="Fintech client headshot"><span class="badge">Fintech</span></button>
@@ -433,13 +419,13 @@
   function resetToStart() {
     // State
     STATE.canInteract = false;
-    STATE.videoOutcome = null;
     STATE.unlockedByTime = false;
 
     // UI
     startHint?.classList.remove('hidden');
     choiceMount.innerHTML = '';
     doneBtn.disabled = true;
+    flowActions.classList.add('hidden');
 
     // Mentor hidden again
     mentor.classList.add('hidden');
