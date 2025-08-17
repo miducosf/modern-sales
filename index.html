@@ -10,9 +10,12 @@
 <body>
   <main class="bg-frame">
     <picture>
-      <source srcset="assets/background-mobile.webp" media="(max-width: 900px)">
+      <source src="assets/background-mobile.webp" media="(max-width: 900px)">
       <img src="assets/background-desktop.png" alt="" class="bg-img">
     </picture>
+
+    <!-- Overlay logo reset (transparent hit area on Simple logo) -->
+    <button class="logo-reset" aria-label="Reset to beginning" data-tip="Reset"></button>
 
     <!-- Invisible icon hit areas -->
     <button class="icon-hit email"    data-tip="Email"    aria-label="Open Email"></button>
@@ -22,9 +25,13 @@
     <button class="icon-hit tasks"    data-tip="Tasks"    aria-label="Open Tasks"></button>
     <button class="icon-hit photos"   data-tip="Clients"  aria-label="Open Clients"></button>
 
-    <!-- Opening video + hint -->
-    <section class="video-wrap" aria-label="Opening video section">
+    <!-- Done button under icons -->
+    <button id="doneBtn" class="done-btn" aria-label="Finish exploring and wrap up" disabled>Done</button>
+
+    <!-- Opening video + hint + content region -->
+    <section class="video-wrap" aria-label="Main content area">
       <div class="start-hint" id="startHint">Select play to begin.</div>
+
       <div class="video-panel" id="openerShell">
         <video id="openerVideo" preload="metadata" controls playsinline>
           <source src="assets/sales-opener.mp4" type="video/mp4">
@@ -32,10 +39,10 @@
         </video>
       </div>
 
-      <!-- Choice / content panel renders here -->
+      <!-- Channel content / selectors / closings render here -->
       <div id="choiceMount"></div>
 
-      <!-- Static mentor panel (revealed near end of opener) -->
+      <!-- Static mentor panel (pinned low) -->
       <aside id="mentorFeedback" class="mentor hidden" role="status" aria-live="polite" aria-hidden="true">
         <img src="assets/sales-manager.jpg" alt="" class="avatar" />
         <div class="copy" id="mentorCopy">I’ll appear here with feedback and guidance throughout your choices.</div>
