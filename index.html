@@ -20,12 +20,12 @@
     <button class="icon-hit video"    data-tip="Video"    aria-label="Open Video"></button>
     <button class="icon-hit calendar" data-tip="Calendar" aria-label="Open Calendar"></button>
     <button class="icon-hit tasks"    data-tip="Tasks"    aria-label="Open Tasks"></button>
-    <button class="icon-hit photos"   data-tip="Photos"   aria-label="Open Photos"></button>
+    <button class="icon-hit photos"   data-tip="Clients"  aria-label="Open Clients"></button>
 
     <!-- Opening video + hint -->
     <section class="video-wrap" aria-label="Opening video section">
       <div class="start-hint" id="startHint">Select play to begin.</div>
-      <div class="video-panel">
+      <div class="video-panel" id="openerShell">
         <video id="openerVideo" preload="metadata" controls playsinline>
           <source src="assets/sales-opener.mp4" type="video/mp4">
           Your browser does not support the video tag.
@@ -35,10 +35,10 @@
       <!-- Choice / content panel renders here -->
       <div id="choiceMount"></div>
 
-      <!-- Static mentor panel -->
-      <aside id="mentorFeedback" class="mentor" role="status" aria-live="polite">
+      <!-- Static mentor panel (revealed near end of opener) -->
+      <aside id="mentorFeedback" class="mentor hidden" role="status" aria-live="polite" aria-hidden="true">
         <img src="assets/sales-manager.jpg" alt="" class="avatar" />
-        <div class="copy" id="mentorCopy"></div>
+        <div class="copy" id="mentorCopy">I’ll appear here with feedback and guidance throughout your choices.</div>
       </aside>
     </section>
   </main>
