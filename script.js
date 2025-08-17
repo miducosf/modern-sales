@@ -3,74 +3,70 @@
 
   // Elements
   const openerVideo = document.getElementById('openerVideo');
-  const openerShell = document.getElementById('openerShell') || openerVideo?.closest('.video-panel');
+  const openerShell = document.getElementById('openerShell');
   const startHint = document.getElementById('startHint');
   const choiceMount = document.getElementById('choiceMount');
   const mentor = document.getElementById('mentorFeedback');
   const mentorCopy = document.getElementById('mentorCopy');
   const iconButtons = Array.from(document.querySelectorAll('.icon-hit'));
+  const doneBtn = document.getElementById('doneBtn');
+  const logoReset = document.querySelector('.logo-reset');
 
   // State
   const STATE = {
     canInteract: false,
-    videoOutcome: null
+    videoOutcome: null, // from the Video channel (not required anymore, but kept for reference)
+    unlockedByTime: false
   };
 
-  // Unlock icons after 30s of the welcome video (or on video end)
-  const UNLOCK_AT = 30; // seconds
+  const UNLOCK_AT = 30; // seconds into opener video
 
   function unlockIcons() {
     if (STATE.canInteract) return;
     STATE.canInteract = true;
+    doneBtn.disabled = false;
   }
 
-  // -----------------------------
-  // Welcome video flow + mentor
-  // -----------------------------
+  // ---------- Opening flow ----------
   let mentorShown = false;
 
   if (openerVideo) {
-    // Hide the "Select play" hint once the user interacts with the video
     const hideHint = () => startHint?.classList.add('hidden');
     ['play', 'seeking', 'timeupdate', 'volumechange', 'click'].forEach(ev =>
       openerVideo.addEventListener(ev, hideHint, { passive: true })
     );
 
     openerVideo.addEventListener('timeupdate', () => {
-      // Unlock after the 30s mark
-      if (!STATE.canInteract && openerVideo.currentTime >= UNLOCK_AT) {
+      // unlock at 30s (or earlier if ended)
+      if (!STATE.unlockedByTime && openerVideo.currentTime >= UNLOCK_AT) {
+        STATE.unlockedByTime = true;
         unlockIcons();
       }
 
-      // Reveal the mentor near the end of the clip
+      // show mentor near the end
       if (!mentorShown) {
         const dur = Number.isFinite(openerVideo.duration) ? openerVideo.duration : NaN;
-        const revealAt = Number.isFinite(dur) ? Math.max(dur - 1.2, 0) : 7.0; // fallback to ~7s if duration unknown
+        const revealAt = Number.isFinite(dur) ? Math.max(dur - 1.2, 0) : 7.0;
         if (openerVideo.currentTime >= revealAt) {
           mentor.classList.remove('hidden');
           mentor.setAttribute('aria-hidden', 'false');
           mentor.classList.add('fade-in');
-          mentorCopy.textContent = "Nice start. From here, use the icons to explore channels—I'll coach as you decide.";
+          mentorCopy.textContent = "Nice start. Explore the channels on the left—I'll coach you as you go. When you’re finished, press Done.";
           mentorShown = true;
         }
       }
     });
 
     openerVideo.addEventListener('ended', () => {
-      // Ensure unlocked even if the video is shorter than 30s
-      unlockIcons();
-
-      // Hide the welcome video panel to make room for the content
-      openerShell?.classList.add('hidden');
+      unlockIcons(); // ensure unlocked if video < 30s
+      openerShell?.classList.add('hidden'); // hide welcome video
     });
   }
 
-  // -----------------------------
-  // Icon routing (guarded)
-  // -----------------------------
+  // ---------- Icon routing ----------
   iconButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      if (!STATE.canInteract) return; // ignore clicks before unlock
+      if (!STATE.canInteract) return;
       const area = getArea(btn);
       if (area) mountPanel(area);
     }, { passive: true });
@@ -86,9 +82,109 @@
     return null;
   }
 
-  // -----------------------------
-  // Mount helper
-  // -----------------------------
+  // ---------- Done flow ----------
+  if (doneBtn) {
+    doneBtn.addEventListener('click', () => {
+      if (!STATE.canInteract) return;
+      renderClosingSelector();
+    });
+  }
+
+  function renderClosingSelector() {
+    choiceMount.innerHTML = '';
+    const panel = document.createElement('div');
+    panel.className = 'panel fade-in';
+    panel.innerHTML = `
+      <h3>How did Jamie respond?</h3>
+      <div class="row">
+        <div class="card" data-close="positive"><strong>Positive wrap-up</strong><br/>“Thanks for talking—feeling good about moving forward.”</div>
+        <div class="card" data-close="negative"><strong>Concerned wrap-up</strong><br/>“Still concerned—let’s pause and revisit next week.”</div>
+      </div>
+    `;
+    panel.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', () => {
+        panel.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        const outcome = card.getAttribute('data-close');
+        playJamieClosing(outcome);
+      });
+    });
+    choiceMount.appendChild(panel);
+    requestAnimationFrame(() => panel.classList.add('show'));
+    mentorCopy.textContent = "Pick which closing you’d like to see. You can revisit channels anytime and press Done again.";
+  }
+
+  function playJamieClosing(outcome) {
+    const src = outcome === 'positive'
+      ? 'assets/05_Jamie_Closing_Positive.mp4'
+      : 'assets/06_Jamie_Closing_Negative.mp4';
+
+    choiceMount.innerHTML = '';
+    const panel = document.createElement('div');
+    panel.className = 'panel fade-in video-choices';
+    panel.innerHTML = `
+      <h3>Jamie – Closing</h3>
+      <div class="small-video">
+        <video id="jamieClose" preload="metadata" playsinline controls>
+          <source src="${src}" type="video/mp4">
+        </video>
+      </div>
+      <div class="controls">
+        <button class="btn primary" id="toManager" disabled>Continue</button>
+      </div>
+    `;
+    choiceMount.appendChild(panel);
+    requestAnimationFrame(() => panel.classList.add('show'));
+
+    const vid = panel.querySelector('#jamieClose');
+    const toManager = panel.querySelector('#toManager');
+
+    // Provide mentor feedback immediately based on outcome
+    if (outcome === 'positive') {
+      mentorCopy.textContent = "This is great news! You kept a warm, professional tone and adapted to the client’s needs. Great job.";
+    } else {
+      mentorCopy.textContent = "Not the best outcome. Your initial tone made it harder to build rapport. Try connecting before problem-solving.";
+    }
+
+    // Enable "Continue" after Jamie closing ends
+    vid.addEventListener('ended', () => {
+      toManager.disabled = false;
+    });
+
+    toManager.addEventListener('click', () => playManagerWrapUp());
+  }
+
+  function playManagerWrapUp() {
+    choiceMount.innerHTML = '';
+    const panel = document.createElement('div');
+    panel.className = 'panel fade-in video-choices';
+    panel.innerHTML = `
+      <h3>Sales Manager – Wrap-Up</h3>
+      <div class="small-video">
+        <video id="mgrClose" preload="metadata" playsinline controls>
+          <source src="assets/04_Manager_WrapUp.mp4" type="video/mp4">
+        </video>
+      </div>
+    `;
+    choiceMount.appendChild(panel);
+    requestAnimationFrame(() => panel.classList.add('show'));
+
+    const vid = panel.querySelector('#mgrClose');
+
+    // Hide mentor during final wrap-up
+    mentor.classList.add('hidden');
+    mentor.setAttribute('aria-hidden', 'true');
+
+    const onEnd = () => {
+      mentor.classList.remove('hidden');
+      mentor.setAttribute('aria-hidden', 'false');
+      mentorCopy.textContent = "Thanks for completing the scenario! You can keep exploring channels or press Done again to replay closings.";
+      vid.removeEventListener('ended', onEnd);
+    };
+    vid.addEventListener('ended', onEnd);
+  }
+
+  // ---------- Channel renderers ----------
   function mountPanel(kind) {
     choiceMount.innerHTML = '';
     const panel = document.createElement('div');
@@ -108,9 +204,7 @@
     requestAnimationFrame(() => panel.classList.add('show'));
   }
 
-  // -----------------------------
   // EMAIL
-  // -----------------------------
   function renderEmail(el) {
     el.innerHTML = `
       <h3>Email – choose a tone</h3>
@@ -137,9 +231,7 @@
     mentorCopy.textContent = "Pick the email that best balances warmth and clarity. Aim for an easy ‘yes’ to a brief call.";
   }
 
-  // -----------------------------
   // TEXT
-  // -----------------------------
   function renderText(el) {
     el.innerHTML = `
       <h3>Text – quick coordination</h3>
@@ -166,9 +258,7 @@
     mentorCopy.textContent = "Texts work for quick nudges. Lead with empathy before logistics.";
   }
 
-  // -----------------------------
-  // VIDEO (Connect → choose → Wrap-up)
-  // -----------------------------
+  // VIDEO (preview/branching practice)
   function renderVideo(el) {
     el.classList.add('video-choices');
     el.innerHTML = `
@@ -187,9 +277,6 @@
         <div class="card" id="optPos" data-outcome="positive"><strong>Response A</strong><br/>Warm acknowledgment + concrete next step.</div>
         <div class="card" id="optNeg" data-outcome="negative"><strong>Response B</strong><br/>Solution-first; lighter on rapport.</div>
       </div>
-      <div class="controls">
-        <button class="btn ghost" id="continueWrap" disabled>Continue to Wrap-up</button>
-      </div>
     `;
 
     const vid = el.querySelector('#scenarioVideo');
@@ -197,13 +284,11 @@
     const showOptions = el.querySelector('#showOptions');
     const replay = el.querySelector('#replay');
     const optionsRow = el.querySelector('#optionsRow');
-    const continueWrap = el.querySelector('#continueWrap');
 
     playConnect.addEventListener('click', () => {
       swapVideo(vid, 'assets/01_Jamie_Connect.mp4');
       mentorCopy.textContent = "Later that day — video call with Jamie.";
       optionsRow.style.display = 'none';
-      continueWrap.disabled = true;
       vid.play().catch(()=>{});
     });
 
@@ -213,10 +298,8 @@
     });
 
     replay.addEventListener('click', () => {
-      vid.currentTime = 0;
-      vid.play().catch(()=>{});
+      vid.currentTime = 0; vid.play().catch(()=>{});
       optionsRow.style.display = 'none';
-      continueWrap.disabled = true;
     });
 
     optionsRow.addEventListener('click', (e) => {
@@ -224,10 +307,9 @@
       if (!card) return;
       optionsRow.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
-      STATE.videoOutcome = card.dataset.outcome;
-      continueWrap.disabled = false;
 
-      if (STATE.videoOutcome === 'positive') {
+      const outcome = card.dataset.outcome;
+      if (outcome === 'positive') {
         swapVideo(vid, 'assets/02_Jamie_Positive.mp4');
         mentorCopy.textContent = "Great news! Your warm tone and adaptive answers built trust.";
       } else {
@@ -235,23 +317,6 @@
         mentorCopy.textContent = "Tough outcome. Next time, connect before problem-solving.";
       }
       vid.play().catch(()=>{});
-    });
-
-    continueWrap.addEventListener('click', () => {
-      // Hide mentor during final wrap-up only
-      mentor.classList.add('hidden');
-      mentor.setAttribute('aria-hidden', 'true');
-
-      swapVideo(vid, 'assets/04_Manager_WrapUp.mp4');
-      vid.play().catch(()=>{});
-
-      const onEnd = () => {
-        mentor.classList.remove('hidden');
-        mentor.setAttribute('aria-hidden', 'false');
-        mentorCopy.textContent = "Thanks for completing the scenario! Want to try a different path or explore other channels?";
-        vid.removeEventListener('ended', onEnd);
-      };
-      vid.addEventListener('ended', onEnd);
     });
 
     mentorCopy.textContent = "This is the final call with Jamie. Start with Connect/Answer, then pick a response.";
@@ -263,9 +328,7 @@
     videoEl.load();
   }
 
-  // -----------------------------
   // CALENDAR
-  // -----------------------------
   function renderCalendar(el) {
     el.classList.add('calendar');
     el.innerHTML = `
@@ -302,7 +365,6 @@
             <div class="meeting cat4" style="top:45%;height:10%;">Lunch & Learn</div>
             <div class="meeting cat2" style="top:70%;height:20%;">Planning</div>
           </div>
-          <!-- horizontal dividers behind meetings -->
           <div class="div" style="top:12.5%"></div><div class="div" style="top:25%"></div><div class="div" style="top:37.5%"></div>
           <div class="div" style="top:50%"></div><div class="div" style="top:62.5%"></div><div class="div" style="top:75%"></div><div class="div" style="top:87.5%"></div>
         </div>
@@ -311,9 +373,7 @@
     mentorCopy.textContent = "Jam-packed week! Propose a low-friction time to connect—acknowledge their constraints.";
   }
 
-  // -----------------------------
   // TASKS
-  // -----------------------------
   function renderTasks(el) {
     el.classList.add('tasks');
     el.innerHTML = `
@@ -336,9 +396,7 @@
     mentorCopy.textContent = "Use this list to keep momentum between touches.";
   }
 
-  // -----------------------------
-  // CLIENTS (Photos)
-  // -----------------------------
+  // CLIENTS
   function renderClients(el) {
     el.classList.add('clients');
     el.innerHTML = `
@@ -367,4 +425,36 @@
     mentorCopy.textContent = "Tap a client to see the engagement strategy I used with them.";
   }
 
+  // ---------- Reset via logo ----------
+  if (logoReset) {
+    logoReset.addEventListener('click', resetToStart);
+  }
+
+  function resetToStart() {
+    // State
+    STATE.canInteract = false;
+    STATE.videoOutcome = null;
+    STATE.unlockedByTime = false;
+
+    // UI
+    startHint?.classList.remove('hidden');
+    choiceMount.innerHTML = '';
+    doneBtn.disabled = true;
+
+    // Mentor hidden again
+    mentor.classList.add('hidden');
+    mentor.setAttribute('aria-hidden', 'true');
+    mentorShown = false;
+
+    // Restore opener
+    openerShell?.classList.remove('hidden');
+    if (openerVideo) {
+      openerVideo.pause();
+      openerVideo.currentTime = 0;
+      openerVideo.load();
+    }
+
+    // Scroll to top of main column if needed
+    try { document.querySelector('.video-wrap')?.scrollIntoView({ behavior:'smooth', block:'start' }); } catch {}
+  }
 })();
