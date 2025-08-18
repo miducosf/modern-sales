@@ -111,7 +111,7 @@
           <div class="small-video">
             <video preload="metadata" playsinline controls>
               <source src="assets/video-positive.mp4" type="video/mp4">
-              <track src="assets/video-positive.mp4" kind="captions" srclang="en" label="English" default>
+              <track src="assets/video-positive.vtt" kind="captions" srclang="en" label="English" default>
             </video>
           </div>
           <div style="display:flex; justify-content:center;">
@@ -122,7 +122,7 @@
           <div class="small-video">
             <video preload="metadata" playsinline controls>
               <source src="assets/video-negative.mp4" type="video/mp4">
-              <track src="assets/video-negative.mp4" kind="captions" srclang="en" label="English" default>
+              <track src="assets/video-negative.vtt" kind="captions" srclang="en" label="English" default>
             </video>
           </div>
           <div style="display:flex; justify-content:center;">
@@ -162,7 +162,7 @@
     wrap.innerHTML = `
       <video id="mgrClose" preload="metadata" playsinline autoplay controls>
         <source src="assets/closing-sales-manager.mp4" type="video/mp4">
-        <track src="assets/closing-sales-manager.mp4" kind="captions" srclang="en" label="English" default>
+        <track src="assets/closing-sales-manager.vtt" kind="captions" srclang="en" label="English" default>
       </video>
     `;
     choiceMount.appendChild(wrap);
@@ -260,7 +260,7 @@
       <div class="small-video">
         <video id="scenarioVideo" preload="metadata" playsinline controls>
           <source src="assets/video-chat-simulation.mp4" type="video/mp4">
-          <track src="assets/video-chat-simulation.mp4" kind="captions" srclang="en" label="English" default>
+          <track src="assets/video-chat-simulation.vtt" kind="captions" srclang="en" label="English" default>
         </video>
       </div>
       <div class="row" id="optionsRow" style="display:none;">
