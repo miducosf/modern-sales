@@ -94,43 +94,46 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 @media (max-width: 380px){ :root{ --btn-scale: 0.66; } }
 
 
-/* === Two-column layout and sizing refinements (added) === */
+/* === Video layout refinements (added) === */
 
-/* Utility grid helpers */
-.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
-.span-2 { grid-column: 1 / -1; }
-
-/* Chat simulation panel: video spans two columns on wide screens, responses side-by-side */
+/* Two-up grid for "How did Jamie respond..." video choices */
+.video-choices{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
 @media (min-width: 900px){
-  #choiceMount .panel.chat .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  #choiceMount .panel.chat .row .small-video,
-  #choiceMount .panel.chat .row .video-panel,
-  #choiceMount .panel.chat .row video { grid-column: 1 / -1; } /* video on top across both */
-  #choiceMount .panel.chat .row .card { min-width: 0; } /* allow cards to share a row */
+  .video-choices{
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+    align-items: start;
+  }
 }
 
-/* Slightly larger video for the chat panel on wide screens */
-@media (min-width: 1200px){
-  #choiceMount .panel.chat .row .small-video,
-  #choiceMount .panel.chat .row video { max-width: 860px; margin-inline: auto; }
-}
-
-/* "How did Jamie respond..." section: enforce two columns on wide, stack on narrow */
-#choiceMount .video-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
-@media (max-width: 900px){
-  #choiceMount .video-choices { grid-template-columns: 1fr; }
-}
-#choiceMount .video-choices .small-video{
+/* Size and contain the videos inside choice cards */
+.video-choices .small-video{
   width: 100%;
-  max-width: 640px;          /* a touch larger */
+  max-width: 620px;
   aspect-ratio: 16 / 9;
   margin: 0 auto;
   overflow: hidden;
   border-radius: 12px;
+  background: #000;
 }
-#choiceMount .video-choices video{
-  width: 100%; height: 100%;
+.video-choices .small-video video{
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   display: block;
   background: #000;
 }
+
+/* Chat simulation: show two option cards side-by-side on wide screens and bump video size slightly */
+@media (min-width: 900px){
+  .panel.chat .row{ flex-wrap: nowrap; }
+  .panel.chat .row > * { flex: 1 1 calc(50% - 8px); }
+  .panel.chat .small-video{ max-width: 640px; }
+}
+
+
+/* Ensure any in-panel videos don't crop unexpectedly */
+.panel video{ object-fit: contain; background:#000; }
