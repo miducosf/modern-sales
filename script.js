@@ -159,7 +159,7 @@
     wrap.className = 'video-panel';
     wrap.innerHTML = `
       <video id="mgrClose" preload="metadata" playsinline autoplay controls>
-        <source src="assets/closing-sales-manaager.mp4" type="video/mp4">
+        <source src="assets/closing-sales-manager.mp4" type="video/mp4">
       </video>
     `;
     choiceMount.appendChild(wrap);
