@@ -7,10 +7,19 @@
   --icon4-top: 54.80%;
   --icon5-top: 64.90%;
   --icon6-top: 75.10%;
+
+  /* Calendar sizing */
+  --dayw: 160px;
+  --cal-body-h: 240px;
 }
 
 html, body { height: 100%; }
-body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:#0b3b88; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  /* lighter blue that blends down from the Simple background */
+  background: linear-gradient(180deg, #0b3b88 0%, #2f6edb 100%);
+}
 .hidden { display: none !important; }
 
 .bg-frame { position: relative; max-width: 1366px; margin: 0 auto; line-height: 0; }
@@ -65,19 +74,23 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 .icon-hit:hover::after,
 .icon-hit:focus-visible::after{ opacity: 1; }
 
-/* Done button (no shrink; +20px right/down) */
+/* Done button (responsive scale ~65% of earlier, +20px right/down) */
 .done-btn{
   position:absolute;
   left: calc(var(--icon-left) - 7.5% + 20px);
   top:  calc(var(--icon6-top) + 8.0% + 20px);
   width: auto;
-  min-width: 140px;          /* prevents shrinking to a dot */
+  min-width: 110px;                 /* keeps it from shrinking to a dot */
   white-space: nowrap;
-  padding:12px 16px;
+  font-weight: 800;
+  font-size: clamp(12px, 0.9vw + 0.35rem, 15px);
+  padding: clamp(8px, 0.7vw + 6px, 12px) clamp(12px, 1.0vw + 8px, 16px);
   border:none; border-radius:999px;
-  background:#0b3b88; color:#fff; font-weight:800; font-size:16px; cursor:pointer;
+  background:#0b3b88; color:#fff; cursor:pointer;
   box-shadow:0 8px 18px rgba(2,8,23,.22);
+  transition: transform .12s ease, box-shadow .12s ease;
 }
+.done-btn:active{ transform: translateY(1px); }
 .done-btn:disabled{ opacity:.45; cursor:default; box-shadow:none; }
 .done-btn:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(59,130,246,.35); }
 
@@ -87,13 +100,21 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
   display:flex; flex-direction:column; align-items:stretch;
 }
 
-/* Centered blue hint pill – matches Done button look */
+/* Centered blue hint pill – larger, more padding, mobile-safe */
 .start-hint{
   position:absolute; left:50%; transform:translateX(-50%);
   top:-54px; /* above the video frame */
-  background:#0b3b88; color:#fff; font-weight:800;
-  font-size:16px; padding:12px 22px; border-radius:999px;
+  z-index: 2;
+  background:#0b3b88; color:#fff; font-weight:800; text-align:center;
+  font-size: clamp(14px, 1.2vw + 0.5rem, 18px);
+  padding: clamp(10px, 1.1vw + 8px, 16px) clamp(16px, 1.6vw + 10px, 24px);
+  border-radius:999px;
   box-shadow:0 10px 24px rgba(2,8,23,.30);
+  max-width: 92%;
+  line-height: 1.2;
+  white-space: normal;
+  word-break: keep-all;
+  hyphens: auto;
 }
 
 /* Video frame */
@@ -122,12 +143,13 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 #choiceMount > .panel.show{ opacity:1; transform:none; }
 
 .panel h3{ margin: 0 0 8px; font-size: 14px; }
-.panel .row{ display:flex; gap:12px; flex-wrap:wrap; }
+.panel .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:stretch; }
+.panel .row > * { flex:1 1 220px; }
 
 /* Cards */
 .card{
   background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:12px;
-  box-shadow:0 6px 14px rgba(2,8,23,.10); flex:1 1 220px; cursor:pointer;
+  box-shadow:0 6px 14px rgba(2,8,23,.10); cursor:pointer;
   transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
 }
 .card:hover{ transform: translateY(-2px); box-shadow:0 12px 24px rgba(2,8,23,.16); }
@@ -152,22 +174,49 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 .btn.primary{ background:#0b3b88; color:#fff; }
 .btn.ghost{ background:#eef2f7; color:#0f172a; border:1px solid #e5e7eb; }
 
-/* Calendar compact */
+/* Calendar – new scrollable layout with fixed times column */
 .calendar .grid{ position:relative; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; }
-.calendar .head{ display:grid; grid-template-columns:60px repeat(5,1fr); background:#f8fafc; border-bottom:1px solid #e5e7eb; }
-.calendar .cell{ padding:6px; font-weight:600; font-size:12px; text-align:center; border-left:1px solid #e5e7eb; }
-.calendar .body{ display:grid; grid-template-columns:60px repeat(5,1fr); height:220px; position:relative; }
+.calendar .head{
+  display:grid;
+  grid-template-columns:60px 1fr;
+  background:#f8fafc; border-bottom:1px solid #e5e7eb;
+}
+.calendar .times-head{ height:34px; border-right:1px solid #e5e7eb; }
+.calendar .days-head-scroll{ overflow-x:auto; }
+.calendar .days-head{
+  display:grid; grid-auto-flow:column; grid-auto-columns: var(--dayw);
+}
+.calendar .days-head > div{
+  display:flex; align-items:center; justify-content:center;
+  padding:6px; font-weight:600; font-size:12px; border-left:1px solid #e5e7eb;
+}
+
+.calendar .body{
+  display:grid; grid-template-columns:60px 1fr; height: var(--cal-body-h);
+  position:relative;
+}
 .calendar .times{
   background:#f1f5f9; border-right:1px solid #e5e7eb; font-size:11px; color:#64748b;
   display:flex; flex-direction:column; justify-content:space-between; padding:6px 4px; z-index:3;
 }
-.calendar .day{ position:relative; border-left:1px solid #e5e7eb; }
+.calendar .days-scroll{ overflow-x:auto; position:relative; }
+.calendar .days{
+  position:relative;
+  display:grid; grid-auto-flow: column; grid-auto-columns: var(--dayw);
+  height:100%;
+  /* horizontal lines behind meetings */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #e5e7eb 0, #e5e7eb 1px,
+    transparent 1px, transparent calc(12.5% - 1px)
+  );
+}
+.calendar .day-col{ position:relative; border-left:1px solid #e5e7eb; }
 .calendar .meeting{
-  position:absolute; left:4px; right:4px;
-  border-radius:8px; padding:2px 6px; font-size:11px; color:#fff; z-index:2;
+  position:absolute; left:6px; right:6px;
+  border-radius:8px; padding:4px 6px; font-size:11px; color:#fff; z-index:2;
 }
 .calendar .cat1{ background:#2a5d9f } .calendar .cat2{ background:#3b82f6 } .calendar .cat3{ background:#2563eb } .calendar .cat4{ background:#1d4ed8 } .calendar .cat5{ background:#60a5fa; color:#0f172a }
-.calendar .div{ position:absolute; left:60px; right:0; height:1px; background:#e5e7eb; z-index:0 }
 
 /* Tasks – checklist style */
 .tasks .tasklist{ list-style:none; margin:8px 0 0; padding:0; }
@@ -189,7 +238,7 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 .clients img{ width:100%; height:140px; object-fit:cover; display:block; }
 .clients .badge{ position:absolute; top:8px; left:8px; padding:2px 8px; background:#ffffffdd; border:1px solid #e5e7eb; border-radius:999px; font-size:12px; }
 
-/* Mentor pinned low */
+/* Mentor pinned low + glide-up animation */
 .mentor{
   margin: 12px auto 0;
   max-width: 700px;
@@ -199,7 +248,11 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
   border-radius: 16px;
   box-shadow: 0 14px 30px rgba(2,8,23,.20);
   color:#0f172a; line-height:1.35;
+  transform: translateY(0);
+  transition: transform .35s ease;
 }
+.mentor.lower{ transform: translateY(18px); }  /* shown during opener */
+.mentor.raise{ transform: translateY(0); }     /* after opener hides */
 .mentor .avatar{ width:56px; height:56px; border-radius:50%; object-fit:cover; flex:0 0 auto; box-shadow: 0 2px 8px rgba(2,8,23,.15); }
 .mentor .copy{ font-size:16px; }
 
@@ -215,7 +268,7 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 .fade-in{ animation:fade .28s ease forwards; }
 @keyframes fade{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
 
-/* Shift content a bit more at narrower sizes to avoid icon-rail overlap (half of earlier shift) */
+/* Mobile / responsive tweaks */
 @media (max-width: 1200px){
   .video-wrap{ left:26.25%; width:58%; top:20.5%; }
 }
@@ -227,4 +280,12 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
   .mentor{ max-width:none; }
   .mentor .copy{ font-size:14px; }
   :root{ --icon-size:5.2%; }
+}
+@media (max-width: 600px){
+  /* Ensure Jamie responses stack neatly inside the panel */
+  .panel .row > * { flex:1 1 100%; min-width: 0; }
+  /* Keep hint pill readable */
+  .start-hint{ top:-46px; max-width: 96%; }
+  /* Slightly smaller Done button on very narrow screens */
+  .done-btn{ min-width: 100px; }
 }
