@@ -8,6 +8,9 @@
   --icon5-top: 64.90%;
   --icon6-top: 75.10%;
 
+  /* Derived edge used to align the Done button with icon graphics */
+  --icon-left-edge: calc(var(--icon-left) - var(--icon-size)/2);
+
   /* Calendar sizing */
   --dayw: 160px;
   --cal-body-h: 240px;
@@ -17,8 +20,7 @@ html, body { height: 100%; }
 body {
   margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  /* lighter blue that blends down from the Simple background */
-  background: linear-gradient(180deg, #0b3b88 0%, #2f6edb 100%);
+  background:#266AA4; /* updated background color */
 }
 .hidden { display: none !important; }
 
@@ -42,7 +44,7 @@ body {
 /* Invisible icon hit areas */
 .icon-hit{
   position:absolute; width:var(--icon-size); aspect-ratio:1/1;
-  left: calc(var(--icon-left) - var(--icon-size)/2); top:0;
+  left: var(--icon-left-edge); top:0;
   background: transparent; border:none; border-radius:12px; cursor:pointer; outline:none;
 }
 .icon-hit.email    { top: calc(var(--icon1-top) - var(--icon-size)/2); }
@@ -74,17 +76,18 @@ body {
 .icon-hit:hover::after,
 .icon-hit:focus-visible::after{ opacity: 1; }
 
-/* Done button (responsive scale ~65% of earlier, +20px right/down) */
+/* Done button
+   - Scales with font-size (padding in em)
+   - Always sits ~20px below previous position AND 10px left of hot-spot’s left edge
+*/
 .done-btn{
   position:absolute;
-  left: calc(var(--icon-left) - 7.5% + 20px);
-  top:  calc(var(--icon6-top) + 8.0% + 20px);
-  width: auto;
-  min-width: 110px;                 /* keeps it from shrinking to a dot */
+  left: calc(var(--icon-left-edge) - 10px);                 /* hugs icon graphics */
+  top:  calc(var(--icon6-top) + 8.0% + 20px);               /* ~20px further down */
   white-space: nowrap;
   font-weight: 800;
-  font-size: clamp(12px, 0.9vw + 0.35rem, 15px);
-  padding: clamp(8px, 0.7vw + 6px, 12px) clamp(12px, 1.0vw + 8px, 16px);
+  font-size: clamp(11px, 0.8vw + 0.35rem, 14px);            /* ~65% of earlier */
+  padding: 0.65em 1.1em;                                    /* scales with text */
   border:none; border-radius:999px;
   background:#0b3b88; color:#fff; cursor:pointer;
   box-shadow:0 8px 18px rgba(2,8,23,.22);
@@ -94,17 +97,16 @@ body {
 .done-btn:disabled{ opacity:.45; cursor:default; box-shadow:none; }
 .done-btn:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(59,130,246,.35); }
 
-/* Main content column (shifted right to avoid rail overlap; half of earlier shift) */
+/* Main content column (right-shifted to avoid rail overlap) */
 .video-wrap{
   position:absolute; left:25.5%; top:20.2%; width:56%;
   display:flex; flex-direction:column; align-items:stretch;
 }
 
-/* Centered blue hint pill – larger, more padding, mobile-safe */
+/* Centered blue hint pill – larger, mobile-safe */
 .start-hint{
   position:absolute; left:50%; transform:translateX(-50%);
-  top:-54px; /* above the video frame */
-  z-index: 2;
+  top:-54px; z-index: 2;
   background:#0b3b88; color:#fff; font-weight:800; text-align:center;
   font-size: clamp(14px, 1.2vw + 0.5rem, 18px);
   padding: clamp(10px, 1.1vw + 8px, 16px) clamp(16px, 1.6vw + 10px, 24px);
@@ -174,7 +176,7 @@ body {
 .btn.primary{ background:#0b3b88; color:#fff; }
 .btn.ghost{ background:#eef2f7; color:#0f172a; border:1px solid #e5e7eb; }
 
-/* Calendar – new scrollable layout with fixed times column */
+/* Calendar – scrollable days with fixed times column */
 .calendar .grid{ position:relative; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; }
 .calendar .head{
   display:grid;
@@ -183,18 +185,13 @@ body {
 }
 .calendar .times-head{ height:34px; border-right:1px solid #e5e7eb; }
 .calendar .days-head-scroll{ overflow-x:auto; }
-.calendar .days-head{
-  display:grid; grid-auto-flow:column; grid-auto-columns: var(--dayw);
-}
+.calendar .days-head{ display:grid; grid-auto-flow:column; grid-auto-columns: var(--dayw); }
 .calendar .days-head > div{
   display:flex; align-items:center; justify-content:center;
   padding:6px; font-weight:600; font-size:12px; border-left:1px solid #e5e7eb;
 }
 
-.calendar .body{
-  display:grid; grid-template-columns:60px 1fr; height: var(--cal-body-h);
-  position:relative;
-}
+.calendar .body{ display:grid; grid-template-columns:60px 1fr; height: var(--cal-body-h); position:relative; }
 .calendar .times{
   background:#f1f5f9; border-right:1px solid #e5e7eb; font-size:11px; color:#64748b;
   display:flex; flex-direction:column; justify-content:space-between; padding:6px 4px; z-index:3;
@@ -204,7 +201,6 @@ body {
   position:relative;
   display:grid; grid-auto-flow: column; grid-auto-columns: var(--dayw);
   height:100%;
-  /* horizontal lines behind meetings */
   background-image: repeating-linear-gradient(
     to bottom,
     #e5e7eb 0, #e5e7eb 1px,
@@ -251,8 +247,8 @@ body {
   transform: translateY(0);
   transition: transform .35s ease;
 }
-.mentor.lower{ transform: translateY(18px); }  /* shown during opener */
-.mentor.raise{ transform: translateY(0); }     /* after opener hides */
+.mentor.lower{ transform: translateY(18px); }
+.mentor.raise{ transform: translateY(0); }
 .mentor .avatar{ width:56px; height:56px; border-radius:50%; object-fit:cover; flex:0 0 auto; box-shadow: 0 2px 8px rgba(2,8,23,.15); }
 .mentor .copy{ font-size:16px; }
 
@@ -268,7 +264,7 @@ body {
 .fade-in{ animation:fade .28s ease forwards; }
 @keyframes fade{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
 
-/* Mobile / responsive tweaks */
+/* Responsive shifts to avoid icon-rail overlap */
 @media (max-width: 1200px){
   .video-wrap{ left:26.25%; width:58%; top:20.5%; }
 }
@@ -282,10 +278,6 @@ body {
   :root{ --icon-size:5.2%; }
 }
 @media (max-width: 600px){
-  /* Ensure Jamie responses stack neatly inside the panel */
   .panel .row > * { flex:1 1 100%; min-width: 0; }
-  /* Keep hint pill readable */
   .start-hint{ top:-46px; max-width: 96%; }
-  /* Slightly smaller Done button on very narrow screens */
-  .done-btn{ min-width: 100px; }
 }
