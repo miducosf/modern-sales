@@ -569,13 +569,12 @@ JSON: ${JSON.stringify(json)}`;
 
 })();
 
-// === CC Tracks + Video Fit Tweaks (added) ===
+// === Auto-attach captions for videos based on matching .vtt filenames (added) ===
 (function(){
-  function addCaptionTrack(video){
+  function ensureTrack(video){
     if (!video) return;
     if (video.querySelector('track[kind="captions"]')) return;
-    const sourceEl = video.querySelector('source');
-    const src = video.currentSrc || (sourceEl && sourceEl.getAttribute('src')) || "";
+    const src = (video.currentSrc || (video.querySelector('source') && video.querySelector('source').getAttribute('src')) || '').trim();
     if (!src || !/\.mp4($|\?)/i.test(src)) return;
     const track = document.createElement('track');
     track.kind = 'captions';
@@ -585,30 +584,14 @@ JSON: ${JSON.stringify(json)}`;
     track.src = src.replace(/\.mp4(\?.*)?$/i, '.vtt$1');
     video.appendChild(track);
   }
-
-  function markChatSimContain(video){
-    const sourceEl = video.querySelector('source');
-    const src = video.currentSrc || (sourceEl && sourceEl.getAttribute('src')) || "";
-    if (src.includes('video-chat-simulation.mp4')) {
-      video.classList.add('video--contain');
-    }
-  }
-
-  function processVideo(video){
-    addCaptionTrack(video);
-    markChatSimContain(video);
-  }
-
-  document.querySelectorAll('video').forEach(processVideo);
-
-  const mo = new MutationObserver((mutations) => {
-    for (const m of mutations){
-      for (const node of m.addedNodes){
-        if (node.nodeType !== 1) continue;
-        if (node.tagName === 'VIDEO') processVideo(node);
-        node.querySelectorAll && node.querySelectorAll('video').forEach(processVideo);
+  document.querySelectorAll('video').forEach(ensureTrack);
+  const mo = new MutationObserver(muts => {
+    muts.forEach(m => m.addedNodes.forEach(node => {
+      if (node.nodeType === 1){
+        if (node.tagName === 'VIDEO') ensureTrack(node);
+        node.querySelectorAll && node.querySelectorAll('video').forEach(ensureTrack);
       }
-    }
+    }));
   });
-  mo.observe(document.body, { childList: true, subtree: true });
+  mo.observe(document.body, { childList:true, subtree:true });
 })();

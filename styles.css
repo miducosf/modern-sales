@@ -94,38 +94,46 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 @media (max-width: 380px){ :root{ --btn-scale: 0.66; } }
 
 
-/* === Accessibility & Video Fit Updates (added) === */
+/* === Video layout refinements (added) === */
 
-/* Ensure chat simulation video shows the whole frame (was zoomed/cropped) */
-.video--contain { object-fit: contain !important; background: #000; }
-
-/* Slightly reduce overall video area on very wide screens (~20% smaller) */
-@media (min-width: 1200px){
-  .video-wrap{ width: 45% !important; } /* was ~56% */
-}
-
-/* "How did Jamie respond..." layout: keep two videos side-by-side on wide screens,
-   stack on narrow screens, and prevent overflow past the white card. */
-.video-choices { 
-  display: grid; 
-  grid-template-columns: repeat(2, minmax(280px, 1fr));
+/* Two-up grid for "How did Jamie respond..." video choices */
+.video-choices{
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 12px;
 }
-@media (max-width: 900px){
-  .video-choices { grid-template-columns: 1fr; }
+@media (min-width: 900px){
+  .video-choices{
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+    align-items: start;
+  }
 }
+
+/* Size and contain the videos inside choice cards */
 .video-choices .small-video{
   width: 100%;
-  max-width: 560px;
+  max-width: 620px;
   aspect-ratio: 16 / 9;
   margin: 0 auto;
   overflow: hidden;
   border-radius: 12px;
+  background: #000;
 }
-.video-choices video{
+.video-choices .small-video video{
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
   background: #000;
 }
+
+/* Chat simulation: show two option cards side-by-side on wide screens and bump video size slightly */
+@media (min-width: 900px){
+  .panel.chat .row{ flex-wrap: nowrap; }
+  .panel.chat .row > * { flex: 1 1 calc(50% - 8px); }
+  .panel.chat .small-video{ max-width: 640px; }
+}
+
+
+/* Ensure any in-panel videos don't crop unexpectedly */
+.panel video{ object-fit: contain; background:#000; }
