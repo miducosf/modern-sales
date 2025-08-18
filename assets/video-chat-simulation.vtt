@@ -1,0 +1,17 @@
+WEBVTT
+
+STYLE
+::cue {
+    color: white;
+    background-color: #383943A3;
+}
+
+00:00:03.400 --> 00:00:04.143
+Hi there.
+
+00:00:04.293 --> 00:00:05.825
+Thanks for jumping onto a call.
+
+00:00:05.975 --> 00:00:09.969
+I'm concerned about how the delays and pricing changes
+will affect our launch.
