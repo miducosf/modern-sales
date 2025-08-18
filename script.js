@@ -44,14 +44,14 @@
         unlockIcons();
       }
 
-      // show mentor near the end
+      // show mentor near the end (in "lower" position)
       if (!mentorShown) {
         const dur = Number.isFinite(openerVideo.duration) ? openerVideo.duration : NaN;
         const revealAt = Number.isFinite(dur) ? Math.max(dur - 1.2, 0) : 7.0;
         if (openerVideo.currentTime >= revealAt) {
           mentor.classList.remove('hidden');
+          mentor.classList.add('lower');
           mentor.setAttribute('aria-hidden', 'false');
-          mentor.classList.add('fade-in');
           mentorCopy.textContent = "Nice start. Explore the channels on the left—I'll coach you as you go. When you’re finished, press Done.";
           mentorShown = true;
         }
@@ -61,12 +61,16 @@
     openerVideo.addEventListener('ended', () => {
       unlockIcons(); // ensure unlocked if video < 30s
       openerShell?.classList.add('hidden'); // hide welcome video
+
+      // glide the mentor up to its resting position
+      mentor.classList.remove('lower');
+      mentor.classList.add('raise');
     });
   }
 
   // ---------- Icon routing ----------
   iconButtons.forEach(btn => {
-    // add native titles for tooltips (in addition to CSS)
+    // native title tooltips
     const label = btn.getAttribute('data-tip');
     if (label && !btn.title) btn.title = label;
 
@@ -104,7 +108,7 @@
     panel.innerHTML = `
       <h3>How did Jamie respond to your conversation?</h3>
       <div class="row" style="gap:16px; align-items:flex-start;">
-        <div style="flex:1; min-width:260px;">
+        <div>
           <div class="small-video">
             <video preload="metadata" playsinline controls>
               <source src="assets/05_Jamie_Closing_Positive.mp4" type="video/mp4">
@@ -114,7 +118,7 @@
             <button class="btn ghost" data-close="positive">Response A</button>
           </div>
         </div>
-        <div style="flex:1; min-width:260px;">
+        <div>
           <div class="small-video">
             <video preload="metadata" playsinline controls>
               <source src="assets/06_Jamie_Closing_Negative.mp4" type="video/mp4">
@@ -130,7 +134,7 @@
     panel.querySelectorAll('button[data-close]').forEach(btn => {
       btn.addEventListener('click', () => {
         const outcome = btn.getAttribute('data-close');
-        // Feedback appears here (mentor bar) and then we show Continue below the bar
+        // Feedback appears here (mentor bar), then we show Continue
         if (outcome === 'positive') {
           mentorCopy.textContent = "This is great news! You kept a warm, professional tone and adapted to the client’s needs. Great job.";
         } else {
@@ -144,8 +148,8 @@
     choiceMount.appendChild(panel);
     requestAnimationFrame(() => panel.classList.add('show'));
 
-    // UPDATED landing text per your request:
-    mentorCopy.textContent = "How did Jamie respond to your conversation? Select each play button below to hear possible responses and then select Response A or Response B.";
+    // Instruction text (no “below”)
+    mentorCopy.textContent = "How did Jamie respond to your conversation? Select each play button to hear possible responses and then select Response A or Response B.";
   }
 
   continueBtn.addEventListener('click', () => {
@@ -156,9 +160,9 @@
   function playManagerWrapUp() {
     choiceMount.innerHTML = '';
 
-    // No title, no card panel — mimic opening video look
+    // No title/border — mimic opening video look
     const wrap = document.createElement('div');
-    wrap.className = 'video-panel'; // same styling as the opener
+    wrap.className = 'video-panel';
     wrap.innerHTML = `
       <video id="mgrClose" preload="metadata" playsinline autoplay controls>
         <source src="assets/04_Manager_WrapUp.mp4" type="video/mp4">
@@ -229,7 +233,7 @@
     mentorCopy.textContent = "Pick the email that best balances warmth and clarity. Aim for an easy ‘yes’ to a brief call.";
   }
 
-  // TEXT (updated)
+  // TEXT
   function renderText(el) {
     el.innerHTML = `
       <h3>Text – choose your message</h3>
@@ -254,7 +258,7 @@
     mentorCopy.textContent = "Texts work for quick nudges. Lead with empathy before logistics.";
   }
 
-  // VIDEO (updated title + options at start + concrete responses)
+  // VIDEO (updated: options appear at start; more directive mentor copy)
   function renderVideo(el) {
     el.classList.add('video-choices');
     el.innerHTML = `
@@ -281,7 +285,7 @@
 
     const revealOptions = () => {
       optionsRow.style.display = 'flex';
-      // (This text was for the earlier step; left blank here to keep mentor space stable)
+      mentorCopy.textContent = "Select the response that addresses Jamie’s real concern—not just finishing the job.";
     };
     vid.addEventListener('play', revealOptions, { once: true });
     vid.play().catch(() => revealOptions());
@@ -309,53 +313,64 @@
     videoEl.load();
   }
 
-  // CALENDAR (title + taller meetings + lines behind + static mentor copy)
+  // CALENDAR – scrollable days with fixed times column + synced header
   function renderCalendar(el) {
     el.classList.add('calendar');
     el.innerHTML = `
       <h3>Calendar</h3>
       <div class="grid">
         <div class="head">
-          <div class="cell" style="background:#f1f5f9"></div>
-          <div class="cell">Mon</div><div class="cell">Tue</div><div class="cell">Wed</div><div class="cell">Thu</div><div class="cell">Fri</div>
+          <div class="times-head"></div>
+          <div class="days-head-scroll"><div class="days-head">
+            <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div>
+          </div></div>
         </div>
         <div class="body">
           <div class="times"><div>9 AM</div><div>10 AM</div><div>11 AM</div><div>12 PM</div><div>1 PM</div><div>2 PM</div><div>3 PM</div><div>4 PM</div></div>
-          <div class="day">
-            <div class="meeting cat1" style="top:5%;height:14%;">Team Sync</div>
-            <div class="meeting cat2" style="top:24%;height:18%;">Client Call</div>
-            <div class="meeting cat3" style="top:60%;height:14%;">Design Review</div>
+          <div class="days-scroll">
+            <div class="days">
+              <div class="day-col">
+                <div class="meeting cat1" style="top:5%;height:14%;">Team Sync</div>
+                <div class="meeting cat2" style="top:24%;height:18%;">Client Call</div>
+                <div class="meeting cat3" style="top:60%;height:14%;">Design Review</div>
+              </div>
+              <div class="day-col">
+                <div class="meeting cat2" style="top:10%;height:19%;">Budget Check</div>
+                <div class="meeting cat4" style="top:40%;height:14%;">1:1 Alex</div>
+                <div class="meeting cat1" style="top:65%;height:24%;">Workshop</div>
+              </div>
+              <div class="day-col">
+                <div class="meeting cat3" style="top:15%;height:19%;">Product Demo</div>
+                <div class="meeting cat5" style="top:45%;height:14%;">Quick Sync</div>
+                <div class="meeting cat4" style="top:70%;height:19%;">Training</div>
+              </div>
+              <div class="day-col">
+                <div class="meeting cat1" style="top:5%;height:14%;">Standup</div>
+                <div class="meeting cat2" style="top:30%;height:24%;">Client Meeting</div>
+                <div class="meeting cat3" style="top:65%;height:19%;">Interview</div>
+              </div>
+              <div class="day-col">
+                <div class="meeting cat5" style="top:10%;height:19%;">Weekly Recap</div>
+                <div class="meeting cat4" style="top:45%;height:14%;">Lunch & Learn</div>
+                <div class="meeting cat2" style="top:70%;height:24%;">Planning</div>
+              </div>
+            </div>
           </div>
-          <div class="day">
-            <div class="meeting cat2" style="top:10%;height:19%;">Budget Check</div>
-            <div class="meeting cat4" style="top:40%;height:14%;">1:1 Alex</div>
-            <div class="meeting cat1" style="top:65%;height:24%;">Workshop</div>
-          </div>
-          <div class="day">
-            <div class="meeting cat3" style="top:15%;height:19%;">Product Demo</div>
-            <div class="meeting cat5" style="top:45%;height:14%;">Quick Sync</div>
-            <div class="meeting cat4" style="top:70%;height:19%;">Training</div>
-          </div>
-          <div class="day">
-            <div class="meeting cat1" style="top:5%;height:14%;">Standup</div>
-            <div class="meeting cat2" style="top:30%;height:24%;">Client Meeting</div>
-            <div class="meeting cat3" style="top:65%;height:19%;">Interview</div>
-          </div>
-          <div class="day">
-            <div class="meeting cat5" style="top:10%;height:19%;">Weekly Recap</div>
-            <div class="meeting cat4" style="top:45%;height:14%;">Lunch & Learn</div>
-            <div class="meeting cat2" style="top:70%;height:24%;">Planning</div>
-          </div>
-          <!-- horizontal dividers behind meetings -->
-          <div class="div" style="top:12.5%"></div><div class="div" style="top:25%"></div><div class="div" style="top:37.5%"></div>
-          <div class="div" style="top:50%"></div><div class="div" style="top:62.5%"></div><div class="div" style="top:75%"></div><div class="div" style="top:87.5%"></div>
         </div>
       </div>
     `;
-    mentorCopy.textContent = "You have a jam-packed week!";
+
+    // Sync header scroll with body scroll for days
+    const headScroll = el.querySelector('.days-head-scroll');
+    const bodyScroll = el.querySelector('.days-scroll');
+    if (headScroll && bodyScroll) {
+      bodyScroll.addEventListener('scroll', () => { headScroll.scrollLeft = bodyScroll.scrollLeft; }, { passive:true });
+    }
+
+    mentorCopy.textContent = "You have a very busy week ahead!";
   }
 
-  // TASKS (removed three blank lines)
+  // TASKS
   function renderTasks(el) {
     el.classList.add('tasks');
     el.innerHTML = `
@@ -379,7 +394,7 @@
     mentorCopy.textContent = "Keep momentum with quick, visible wins. Check things off as you go.";
   }
 
-  // CLIENTS (unchanged from prior update)
+  // CLIENTS
   function renderClients(el) {
     el.classList.add('clients');
     el.innerHTML = `
@@ -409,8 +424,9 @@
   }
 
   // ---------- Reset via logo ----------
-  const resetEnabled = !!logoReset;
-  if (resetEnabled) logoReset.addEventListener('click', resetToStart);
+  if (logoReset) {
+    logoReset.addEventListener('click', resetToStart);
+  }
 
   function resetToStart() {
     STATE.canInteract = false;
@@ -422,6 +438,7 @@
     flowActions.classList.add('hidden');
 
     mentor.classList.add('hidden');
+    mentor.classList.remove('raise','lower');
     mentor.setAttribute('aria-hidden', 'true');
     mentorShown = false;
 
