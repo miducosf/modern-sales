@@ -8,13 +8,13 @@
   --icon5-top: 64.90%;
   --icon6-top: 75.10%;
 
-  /* Derived edge to align to icon hot-spot left */
+  /* Left edge of icon hot-spots (for icon alignment) */
   --icon-left-edge: calc(var(--icon-left) - var(--icon-size)/2);
 
-  /* Button scaling & alignment */
-  --btn-scale: clamp(0.70, 0.55 + 0.05vw, 1); /* phones -> desktop */
-  --done-left-nudge: 18px; /* move right relative to icon hot-spot edge */
-
+  /* Done button scale + fixed horizontal position (responsive) */
+  --btn-scale: clamp(0.70, 0.55 + 0.05vw, 1);
+  --done-left: 6.02%;  /* ≈ 82px on your widest layout */
+  
   /* Calendar sizing */
   --dayw: 160px;
   --cal-body-h: 240px;
@@ -45,7 +45,7 @@ body {
 }
 .logo-reset:focus-visible{ box-shadow:0 0 0 3px rgba(59,130,246,.35); border-radius:10px; }
 
-/* Invisible icon hit areas */
+/* Icon hot-spots */
 .icon-hit{
   position:absolute; width:var(--icon-size); aspect-ratio:1/1;
   left: var(--icon-left-edge); top:0;
@@ -80,45 +80,31 @@ body {
 .icon-hit:hover::after,
 .icon-hit:focus-visible::after{ opacity: 1; }
 
-/* Done button — scalable & pinned to icon column */
+/* Done button — scales and is fixed to your left offset */
 .done-btn{
   position:absolute;
-  left: calc(var(--icon-left-edge) + var(--done-left-nudge));
+  left: var(--done-left);                                  /* 6.02% ≈ 82px */
   top:  calc(var(--icon6-top) + 8.0% + 20px);
 
-  /* scale whole pill, anchored to icon edge */
   transform: scale(var(--btn-scale));
   transform-origin: left center;
 
   white-space: nowrap;
   font-weight: 800;
   font-size: clamp(11px, 0.8vw + 0.35rem, 14px);
-  padding: 0.70em 1.15em; /* scales with font */
+  padding: 0.70em 1.15em; /* scales with text */
   border:none; border-radius:999px;
   background:#0b3b88; color:#fff; cursor:pointer;
   box-shadow:0 8px 18px rgba(2,8,23,.22);
   transition: transform .12s ease, box-shadow .12s ease;
 }
-
-/* === Done button: lock horizontal position to your target === */
-:root{
-  --done-left: 6.24%;   /* set to 5px if you prefer a fixed pixel offset */
-}
-
-.done-btn{
-  left: var(--done-left) !important;   /* override previous calc(...) */
-  /* keep all other .done-btn styles as-is (scale, top, etc.) */
-}
 .done-btn:active{ transform: scale(var(--btn-scale)) translateY(1px); }
 .done-btn:disabled{ opacity:.45; cursor:default; box-shadow:none; }
 .done-btn:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(59,130,246,.35); }
 
-/* On wider browsers, slightly larger & a tiny push right (still conservative) */
+/* Larger on widescreen (about +30%) */
 @media (min-width: 1200px){
-  :root{
-    --btn-scale: 1.3;
-    --done-left-nudge: 20px; /* brought back left vs. previous try */
-  }
+  :root{ --btn-scale: 1.3; }
 }
 
 /* Main content column */
@@ -154,7 +140,7 @@ body {
   border:0; display:block; object-fit:cover; background:#000; border-radius:16px;
 }
 
-/* Fade helpers for opener/mentor */
+/* Fade helpers */
 .fade-in{ animation:fadeIn .28s ease forwards; }
 @keyframes fadeIn{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
 .fade-out{ animation:fadeOut .3s ease forwards; }
@@ -263,7 +249,7 @@ body {
 .clients img{ width:100%; height:140px; object-fit:cover; display:block; }
 .clients .badge{ position:absolute; top:8px; left:8px; padding:2px 8px; background:#ffffffdd; border:1px solid #e5e7eb; border-radius:999px; font-size:12px; }
 
-/* Mentor (no glide; we just fade it in when needed) */
+/* Mentor (simple appearance; no glide) */
 .mentor{
   margin: 12px auto 0;
   max-width: 700px;
@@ -285,7 +271,7 @@ body {
 }
 .continue-btn:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(59,130,246,.35); }
 
-/* Responsive shifts */
+/* Responsive shifts to avoid icon-rail overlap */
 @media (max-width: 1200px){
   .video-wrap{ left:26.25%; width:58%; top:20.5%; }
 }
@@ -302,24 +288,7 @@ body {
   .panel .row > * { flex:1 1 100%; min-width: 0; }
   .start-hint{ top:-56px; max-width: 96%; }
 }
+/* Tiny screens—slightly smaller Done pill */
 @media (max-width: 380px){
   :root{ --btn-scale: 0.66; }
 }
-
-/* ----- Debug overlay ----- */
-#debugMarker{
-  position:absolute;
-  width:160px; height:40px;
-  outline:2px solid red;
-  border-radius:10px;
-  pointer-events:none;
-  z-index: 9999;
-}
-#debugHUD{
-  position:fixed; right:12px; top:12px;
-  background: rgba(2,8,23,.78);
-  color:#fff; font: 12px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  padding:10px 12px; border-radius:10px; z-index: 10000;
-  box-shadow: 0 12px 28px rgba(2,8,23,.35);
-}
-#debugHUD code{ font-family:inherit; background:rgba(255,255,255,.1); padding:0 4px; border-radius:6px; }
