@@ -256,7 +256,7 @@
       <h3>Video – how would you respond?</h3>
       <div class="small-video">
         <video id="scenarioVideo" preload="metadata" playsinline controls>
-          <source src="assets/01_Jamie_Connect.mp4" type="video/mp4">
+          <source src="assets/video-chat-simulation.mp4" type="video/mp4">
         </video>
       </div>
       <div class="row" id="optionsRow" style="display:none;">
