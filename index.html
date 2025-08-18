@@ -13,48 +13,32 @@
       <source srcset="assets/background-mobile.webp" media="(max-width: 900px)">
       <img src="assets/background-desktop.png" alt="" class="bg-img">
     </picture>
-
-    <!-- Overlay logo reset (transparent hit area on Simple logo) -->
     <button class="logo-reset" aria-label="Reset to beginning" data-tip="Reset"></button>
-
-    <!-- Invisible icon hit areas (with tooltips) -->
     <button class="icon-hit email"    data-tip="Email"    aria-label="Open Email"></button>
     <button class="icon-hit text"     data-tip="Text"     aria-label="Open Text"></button>
     <button class="icon-hit video"    data-tip="Video"    aria-label="Open Video"></button>
     <button class="icon-hit calendar" data-tip="Calendar" aria-label="Open Calendar"></button>
     <button class="icon-hit tasks"    data-tip="Tasks"    aria-label="Open Tasks"></button>
     <button class="icon-hit photos"   data-tip="Clients"  aria-label="Open Clients"></button>
-
-    <!-- Done button under icons -->
     <button id="doneBtn" class="done-btn" aria-label="Finish exploring and wrap up" disabled>Done</button>
-
-    <!-- Opening video + hint + content region -->
     <section class="video-wrap" aria-label="Main content area">
       <div class="start-hint" id="startHint">Select play to begin.</div>
-
       <div class="video-panel" id="openerShell">
         <video id="openerVideo" preload="metadata" controls playsinline>
           <source src="assets/sales-opener.mp4" type="video/mp4">
           Your browser does not support the video tag.
         </video>
       </div>
-
-      <!-- Channel content / selectors / closings render here -->
       <div id="choiceMount"></div>
-
-      <!-- Static mentor panel (pinned low) -->
       <aside id="mentorFeedback" class="mentor hidden" role="status" aria-live="polite" aria-hidden="true">
         <img src="assets/sales-manager.jpg" alt="" class="avatar" />
         <div class="copy" id="mentorCopy">I’ll appear here with feedback and guidance throughout your choices.</div>
       </aside>
-
-      <!-- Flow action below feedback bar (appears after Done selection) -->
       <div id="flowActions" class="flow-actions hidden">
         <button id="continueBtn" class="continue-btn" aria-label="Continue to closing insights">Continue</button>
       </div>
     </section>
   </main>
-
   <script src="script.js"></script>
 </body>
 </html>
