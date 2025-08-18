@@ -418,7 +418,7 @@
     STATE.unlockedByTime = false;
 
     startHint?.classList.remove('hidden');
-    if (startHint) startHint.textContent = "Select play to continue.";
+    if (startHint) startHint.textContent = "Select play to begin.";
     choiceMount.innerHTML = '';
     doneBtn && (doneBtn.disabled = true);
     flowActions?.classList.add('hidden');
