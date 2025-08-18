@@ -3,7 +3,7 @@
 
   // Elements
   const openerVideo = document.getElementById('openerVideo');
-  const openerShell = document.getElementById('openerShell');
+  const openerShell = document.getElementById('openerShell'); // wrapper around video-panel
   const startHint = document.getElementById('startHint');
   const choiceMount = document.getElementById('choiceMount');
   const mentor = document.getElementById('mentorFeedback');
@@ -13,8 +13,9 @@
   const logoReset = document.querySelector('.logo-reset');
   const flowActions = document.getElementById('flowActions');
   const continueBtn = document.getElementById('continueBtn');
+  const frame = document.querySelector('.bg-frame');
 
-  // Set the start pill text
+  // Start pill text
   if (startHint) startHint.textContent = "Select play to continue.";
 
   // State
@@ -22,62 +23,53 @@
     canInteract: false,
     unlockedByTime: false
   };
-
   const UNLOCK_AT = 30; // seconds into opener video
 
   function unlockIcons() {
     if (STATE.canInteract) return;
     STATE.canInteract = true;
-    doneBtn.disabled = false;
+    if (doneBtn) doneBtn.disabled = false;
   }
 
-  // ---------- Opening flow ----------
-  let mentorShown = false;
-
+  // ---------- Opening flow (no mentor during playback) ----------
   if (openerVideo) {
     const hideHint = () => startHint?.classList.add('hidden');
-    ['play', 'seeking', 'timeupdate', 'volumechange', 'click'].forEach(ev =>
-      openerVideo.addEventListener(ev, hideHint, { passive: true })
+    ['play','seeking','timeupdate','volumechange','click'].forEach(ev =>
+      openerVideo.addEventListener(ev, hideHint, { passive:true })
     );
 
     openerVideo.addEventListener('timeupdate', () => {
-      // unlock at 30s (or earlier if ended)
       if (!STATE.unlockedByTime && openerVideo.currentTime >= UNLOCK_AT) {
         STATE.unlockedByTime = true;
         unlockIcons();
       }
-
-      // show mentor near the end (in "lower" position)
-      if (!mentorShown) {
-        const dur = Number.isFinite(openerVideo.duration) ? openerVideo.duration : NaN;
-        const revealAt = Number.isFinite(dur) ? Math.max(dur - 1.2, 0) : 7.0;
-        if (openerVideo.currentTime >= revealAt) {
-          mentor.classList.remove('hidden');
-          mentor.classList.add('lower');
-          mentor.setAttribute('aria-hidden', 'false');
-          mentorCopy.textContent = "Nice start. Explore the channels on the left—I'll coach you as you go. When you’re finished, press Done.";
-          mentorShown = true;
-        }
-      }
     });
 
     openerVideo.addEventListener('ended', () => {
-      unlockIcons(); // ensure unlocked if video < 30s
+      unlockIcons();
 
-      // Hide the opener window immediately…
-      openerShell?.classList.add('hidden');
-
-      // …then pause briefly and glide the mentor up slowly.
-      setTimeout(() => {
-        mentor.classList.remove('lower');
-        mentor.classList.add('raise');
-      }, 2000); // ~2s pause per your request
+      // Fade out the opener shell, then hide it and fade in mentor
+      if (openerShell) {
+        openerShell.classList.add('fade-out');
+        openerShell.addEventListener('animationend', () => {
+          openerShell.classList.add('hidden');
+          openerShell.classList.remove('fade-out');
+          // Fade in mentor with same message as before
+          mentorCopy.textContent = "Nice start. Explore the channels on the left—I'll coach you as you go. When you’re finished, press Done.";
+          mentor.classList.remove('hidden');
+          mentor.classList.add('fade-in');
+        }, { once:true });
+      } else {
+        // Fallback if no shell wrapper
+        mentorCopy.textContent = "Nice start. Explore the channels on the left—I'll coach you as you go. When you’re finished, press Done.";
+        mentor.classList.remove('hidden');
+        mentor.classList.add('fade-in');
+      }
     });
   }
 
   // ---------- Icon routing ----------
   iconButtons.forEach(btn => {
-    // native title tooltips
     const label = btn.getAttribute('data-tip');
     if (label && !btn.title) btn.title = label;
 
@@ -108,7 +100,7 @@
 
   function renderClosingSelector() {
     choiceMount.innerHTML = '';
-    flowActions.classList.add('hidden'); // hide continue until a selection is made
+    flowActions?.classList.add('hidden');
 
     const panel = document.createElement('div');
     panel.className = 'panel fade-in video-choices';
@@ -141,25 +133,21 @@
     panel.querySelectorAll('button[data-close]').forEach(btn => {
       btn.addEventListener('click', () => {
         const outcome = btn.getAttribute('data-close');
-        // Feedback appears here (mentor bar), then we show Continue
-        if (outcome === 'positive') {
-          mentorCopy.textContent = "This is great news! You kept a warm, professional tone and adapted to the client’s needs. Great job.";
-        } else {
-          mentorCopy.textContent = "Not the best outcome. Your initial tone made it harder to build rapport. Try connecting before problem-solving.";
-        }
-        flowActions.classList.remove('hidden');
-        continueBtn.focus();
+        mentorCopy.textContent = (outcome === 'positive')
+          ? "This is great news! You kept a warm, professional tone and adapted to the client’s needs. Great job."
+          : "Not the best outcome. Your initial tone made it harder to build rapport. Try connecting before problem-solving.";
+        flowActions?.classList.remove('hidden');
+        continueBtn?.focus();
       });
     });
 
     choiceMount.appendChild(panel);
     requestAnimationFrame(() => panel.classList.add('show'));
 
-    // Instruction text (no “below”)
     mentorCopy.textContent = "How did Jamie respond to your conversation? Select each play button to hear possible responses and then select Response A or Response B.";
   }
 
-  continueBtn.addEventListener('click', () => {
+  continueBtn?.addEventListener('click', () => {
     flowActions.classList.add('hidden');
     playManagerWrapUp();
   });
@@ -167,7 +155,6 @@
   function playManagerWrapUp() {
     choiceMount.innerHTML = '';
 
-    // No title/border — mimic opening video look
     const wrap = document.createElement('div');
     wrap.className = 'video-panel';
     wrap.innerHTML = `
@@ -195,7 +182,7 @@
   // ---------- Channel renderers ----------
   function mountPanel(kind) {
     choiceMount.innerHTML = '';
-    flowActions.classList.add('hidden');
+    flowActions?.classList.add('hidden');
     const panel = document.createElement('div');
     panel.className = 'panel fade-in';
 
@@ -213,7 +200,6 @@
     requestAnimationFrame(() => panel.classList.add('show'));
   }
 
-  // EMAIL
   function renderEmail(el) {
     el.innerHTML = `
       <h3>Email – choose a tone</h3>
@@ -240,7 +226,6 @@
     mentorCopy.textContent = "Pick the email that best balances warmth and clarity. Aim for an easy ‘yes’ to a brief call.";
   }
 
-  // TEXT
   function renderText(el) {
     el.innerHTML = `
       <h3>Text – choose your message</h3>
@@ -265,7 +250,6 @@
     mentorCopy.textContent = "Texts work for quick nudges. Lead with empathy before logistics.";
   }
 
-  // VIDEO
   function renderVideo(el) {
     el.classList.add('video-choices');
     el.innerHTML = `
@@ -320,7 +304,6 @@
     videoEl.load();
   }
 
-  // CALENDAR – scrollable days with fixed times column + synced header
   function renderCalendar(el) {
     el.classList.add('calendar');
     el.innerHTML = `
@@ -367,7 +350,6 @@
       </div>
     `;
 
-    // Sync header scroll with body scroll for days
     const headScroll = el.querySelector('.days-head-scroll');
     const bodyScroll = el.querySelector('.days-scroll');
     if (headScroll && bodyScroll) {
@@ -377,7 +359,6 @@
     mentorCopy.textContent = "You have a very busy week ahead!";
   }
 
-  // TASKS
   function renderTasks(el) {
     el.classList.add('tasks');
     el.innerHTML = `
@@ -401,7 +382,6 @@
     mentorCopy.textContent = "Keep momentum with quick, visible wins. Check things off as you go.";
   }
 
-  // CLIENTS
   function renderClients(el) {
     el.classList.add('clients');
     el.innerHTML = `
@@ -431,9 +411,7 @@
   }
 
   // ---------- Reset via logo ----------
-  if (logoReset) {
-    logoReset.addEventListener('click', resetToStart);
-  }
+  logoReset?.addEventListener('click', resetToStart);
 
   function resetToStart() {
     STATE.canInteract = false;
@@ -442,13 +420,11 @@
     startHint?.classList.remove('hidden');
     if (startHint) startHint.textContent = "Select play to continue.";
     choiceMount.innerHTML = '';
-    doneBtn.disabled = true;
-    flowActions.classList.add('hidden');
+    doneBtn && (doneBtn.disabled = true);
+    flowActions?.classList.add('hidden');
 
     mentor.classList.add('hidden');
-    mentor.classList.remove('raise','lower');
     mentor.setAttribute('aria-hidden', 'true');
-    mentorShown = false;
 
     openerShell?.classList.remove('hidden');
     if (openerVideo) {
@@ -458,4 +434,137 @@
     }
     try { document.querySelector('.video-wrap')?.scrollIntoView({ behavior:'smooth', block:'start' }); } catch {}
   }
+
+  // ---------- DEBUG MODE ----------
+  const urlDebug = new URLSearchParams(location.search).get('debug');
+  let debugOn = urlDebug === '1';
+  document.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 'd' && e.shiftKey) {
+      debugOn = !debugOn;
+      toggleDebug(debugOn);
+    }
+  });
+
+  function toggleDebug(on) {
+    if (!frame) return;
+    if (on) {
+      createDebugOverlay();
+    } else {
+      removeDebugOverlay();
+    }
+  }
+
+  let marker, hud;
+  function createDebugOverlay() {
+    if (marker || hud) return;
+
+    const frameRect = frame.getBoundingClientRect();
+    const btnRect = doneBtn?.getBoundingClientRect();
+    const initLeft = btnRect ? (btnRect.left - frameRect.left) : 80;
+    const initTop  = btnRect ? (btnRect.top - frameRect.top)  : (frameRect.height * 0.8);
+
+    marker = document.createElement('div');
+    marker.id = 'debugMarker';
+    marker.style.left = `${initLeft}px`;
+    marker.style.top  = `${initTop}px`;
+    frame.appendChild(marker);
+
+    hud = document.createElement('div');
+    hud.id = 'debugHUD';
+    hud.innerHTML = `<div><strong>Debug HUD</strong></div>
+      <div>Arrows: move 1px • Shift+Arrows: 10px • <code>G</code> snap • <code>C</code> copy • <code>Esc</code> hide • <code>Shift+D</code> toggle</div>
+      <div id="debugData" style="margin-top:6px; white-space:pre;"></div>`;
+    document.body.appendChild(hud);
+
+    updateHUD();
+
+    window.addEventListener('keydown', handleDebugKeys, true);
+  }
+
+  function removeDebugOverlay() {
+    window.removeEventListener('keydown', handleDebugKeys, true);
+    marker?.remove(); marker = null;
+    hud?.remove(); hud = null;
+  }
+
+  function handleDebugKeys(e) {
+    if (!marker) return;
+    let step = e.shiftKey ? 10 : 1;
+    let moved = false;
+    const left = parseFloat(marker.style.left || '0');
+    const top  = parseFloat(marker.style.top || '0');
+
+    switch (e.key) {
+      case 'ArrowLeft':  marker.style.left = `${left - step}px`; moved = true; break;
+      case 'ArrowRight': marker.style.left = `${left + step}px`; moved = true; break;
+      case 'ArrowUp':    marker.style.top  = `${top  - step}px`; moved = true; break;
+      case 'ArrowDown':  marker.style.top  = `${top  + step}px`; moved = true; break;
+      case 'g': case 'G':
+        if (doneBtn) {
+          const fr = frame.getBoundingClientRect();
+          const br = doneBtn.getBoundingClientRect();
+          marker.style.left = `${br.left - fr.left}px`;
+          marker.style.top  = `${br.top  - fr.top }px`;
+          moved = true;
+        }
+        break;
+      case 'c': case 'C':
+        copyDebugJSON();
+        break;
+      case 'Escape':
+        toggleDebug(false);
+        break;
+      default: return;
+    }
+    if (moved) { e.preventDefault(); updateHUD(); }
+  }
+
+  function updateHUD() {
+    if (!marker || !hud) return;
+    const dataEl = hud.querySelector('#debugData');
+    const fr = frame.getBoundingClientRect();
+    const mr = marker.getBoundingClientRect();
+    const icon = document.querySelector('.icon-hit.email') || document.querySelector('.icon-hit');
+    const ir = icon ? icon.getBoundingClientRect() : null;
+
+    const left = mr.left - fr.left;
+    const top  = mr.top  - fr.top;
+    const pctX = ((left / fr.width) * 100).toFixed(2);
+    const pctY = ((top  / fr.height) * 100).toFixed(2);
+
+    let nudge = null;
+    if (ir) nudge = Math.round(left - (ir.left - fr.left));
+
+    const json = {
+      frame: { width: Math.round(fr.width), height: Math.round(fr.height) },
+      marker: { left: Math.round(left), top: Math.round(top), leftPct: pctX, topPct: pctY, width: Math.round(mr.width), height: Math.round(mr.height) },
+      iconEdgeLeftPx: ir ? Math.round(ir.left - fr.left) : null,
+      suggestedDoneLeftNudgePx: nudge
+    };
+    dataEl.textContent =
+`left: ${Math.round(left)}px  (${pctX}%)
+top:  ${Math.round(top)}px   (${pctY}%)
+icon left edge: ${ir ? Math.round(ir.left - fr.left) + 'px' : 'n/a'}
+suggested --done-left-nudge: ${nudge !== null ? nudge + 'px' : 'n/a'}
+
+JSON: ${JSON.stringify(json)}`;
+  }
+
+  async function copyDebugJSON() {
+    const fr = frame.getBoundingClientRect();
+    const mr = marker.getBoundingClientRect();
+    const icon = document.querySelector('.icon-hit.email') || document.querySelector('.icon-hit');
+    const ir = icon ? icon.getBoundingClientRect() : null;
+    const payload = {
+      frame: { width: Math.round(fr.width), height: Math.round(fr.height) },
+      marker: { left: Math.round(mr.left - fr.left), top: Math.round(mr.top - fr.top), width: Math.round(mr.width), height: Math.round(mr.height) },
+      iconEdgeLeftPx: ir ? Math.round(ir.left - fr.left) : null,
+      suggestedDoneLeftNudgePx: ir ? Math.round((mr.left - fr.left) - (ir.left - fr.left)) : null
+    };
+    try { await navigator.clipboard.writeText(JSON.stringify(payload)); } catch {}
+  }
+
+  // Auto-enable debug if ?debug=1
+  if (debugOn) toggleDebug(true);
+
 })();
