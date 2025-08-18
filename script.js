@@ -66,6 +66,10 @@
 
   // ---------- Icon routing ----------
   iconButtons.forEach(btn => {
+    // add native titles for tooltips (in addition to CSS)
+    const label = btn.getAttribute('data-tip');
+    if (label && !btn.title) btn.title = label;
+
     btn.addEventListener('click', () => {
       if (!STATE.canInteract) return;
       const area = getArea(btn);
@@ -102,7 +106,7 @@
       <div class="row" style="gap:16px; align-items:flex-start;">
         <div style="flex:1; min-width:260px;">
           <div class="small-video">
-            <video preload="metadata" playsinline>
+            <video preload="metadata" playsinline controls>
               <source src="assets/05_Jamie_Closing_Positive.mp4" type="video/mp4">
             </video>
           </div>
@@ -112,7 +116,7 @@
         </div>
         <div style="flex:1; min-width:260px;">
           <div class="small-video">
-            <video preload="metadata" playsinline>
+            <video preload="metadata" playsinline controls>
               <source src="assets/06_Jamie_Closing_Negative.mp4" type="video/mp4">
             </video>
           </div>
@@ -122,10 +126,11 @@
         </div>
       </div>
     `;
+
     panel.querySelectorAll('button[data-close]').forEach(btn => {
       btn.addEventListener('click', () => {
         const outcome = btn.getAttribute('data-close');
-        // Give feedback immediately in mentor bar and show Continue
+        // Feedback appears here (mentor bar) and then we show Continue below the bar
         if (outcome === 'positive') {
           mentorCopy.textContent = "This is great news! You kept a warm, professional tone and adapted to the client’s needs. Great job.";
         } else {
@@ -138,7 +143,9 @@
 
     choiceMount.appendChild(panel);
     requestAnimationFrame(() => panel.classList.add('show'));
-    mentorCopy.textContent = "Pick which closing you’d like to see. You’ll get feedback here, then press Continue to see closing insights.";
+
+    // UPDATED landing text per your request:
+    mentorCopy.textContent = "How did Jamie respond to your conversation? Select each play button below to hear possible responses and then select Response A or Response B.";
   }
 
   continueBtn.addEventListener('click', () => {
@@ -148,20 +155,18 @@
 
   function playManagerWrapUp() {
     choiceMount.innerHTML = '';
-    const panel = document.createElement('div');
-    panel.className = 'panel fade-in video-choices';
-    panel.innerHTML = `
-      <h3>Closing insights</h3>
-      <div class="small-video">
-        <video id="mgrClose" preload="metadata" playsinline autoplay controls>
-          <source src="assets/04_Manager_WrapUp.mp4" type="video/mp4">
-        </video>
-      </div>
-    `;
-    choiceMount.appendChild(panel);
-    requestAnimationFrame(() => panel.classList.add('show'));
 
-    const vid = panel.querySelector('#mgrClose');
+    // No title, no card panel — mimic opening video look
+    const wrap = document.createElement('div');
+    wrap.className = 'video-panel'; // same styling as the opener
+    wrap.innerHTML = `
+      <video id="mgrClose" preload="metadata" playsinline autoplay controls>
+        <source src="assets/04_Manager_WrapUp.mp4" type="video/mp4">
+      </video>
+    `;
+    choiceMount.appendChild(wrap);
+
+    const vid = wrap.querySelector('#mgrClose');
 
     // Hide mentor during final wrap-up
     mentor.classList.add('hidden');
@@ -249,7 +254,7 @@
     mentorCopy.textContent = "Texts work for quick nudges. Lead with empathy before logistics.";
   }
 
-  // VIDEO (updated: no control row; options appear at start; concrete responses)
+  // VIDEO (updated title + options at start + concrete responses)
   function renderVideo(el) {
     el.classList.add('video-choices');
     el.innerHTML = `
@@ -274,18 +279,12 @@
     const vid = el.querySelector('#scenarioVideo');
     const optionsRow = el.querySelector('#optionsRow');
 
-    // Show options when video begins to play; fall back to showing immediately if autoplay is blocked
     const revealOptions = () => {
       optionsRow.style.display = 'flex';
-      mentorCopy.textContent = "Listen for the concern, then choose the response you’d lead with.";
+      // (This text was for the earlier step; left blank here to keep mentor space stable)
     };
-
     vid.addEventListener('play', revealOptions, { once: true });
-    // Try to start playback (may be blocked depending on browser policy)
-    vid.play().catch(() => {
-      // If play is blocked, still reveal choices so user can proceed
-      revealOptions();
-    });
+    vid.play().catch(() => revealOptions());
 
     optionsRow.addEventListener('click', (e) => {
       const card = e.target.closest('.card');
@@ -310,11 +309,11 @@
     videoEl.load();
   }
 
-  // CALENDAR
+  // CALENDAR (title + taller meetings + lines behind + static mentor copy)
   function renderCalendar(el) {
     el.classList.add('calendar');
     el.innerHTML = `
-      <h3>Calendar – jam-packed week</h3>
+      <h3>Calendar</h3>
       <div class="grid">
         <div class="head">
           <div class="cell" style="background:#f1f5f9"></div>
@@ -323,39 +322,40 @@
         <div class="body">
           <div class="times"><div>9 AM</div><div>10 AM</div><div>11 AM</div><div>12 PM</div><div>1 PM</div><div>2 PM</div><div>3 PM</div><div>4 PM</div></div>
           <div class="day">
-            <div class="meeting cat1" style="top:5%;height:10%;">Team Sync</div>
-            <div class="meeting cat2" style="top:22%;height:14%;">Client Call</div>
-            <div class="meeting cat3" style="top:60%;height:10%;">Design Review</div>
+            <div class="meeting cat1" style="top:5%;height:14%;">Team Sync</div>
+            <div class="meeting cat2" style="top:24%;height:18%;">Client Call</div>
+            <div class="meeting cat3" style="top:60%;height:14%;">Design Review</div>
           </div>
           <div class="day">
-            <div class="meeting cat2" style="top:10%;height:15%;">Budget Check</div>
-            <div class="meeting cat4" style="top:40%;height:10%;">1:1 Alex</div>
-            <div class="meeting cat1" style="top:65%;height:20%;">Workshop</div>
+            <div class="meeting cat2" style="top:10%;height:19%;">Budget Check</div>
+            <div class="meeting cat4" style="top:40%;height:14%;">1:1 Alex</div>
+            <div class="meeting cat1" style="top:65%;height:24%;">Workshop</div>
           </div>
           <div class="day">
-            <div class="meeting cat3" style="top:15%;height:15%;">Product Demo</div>
-            <div class="meeting cat5" style="top:45%;height:10%;">Quick Sync</div>
-            <div class="meeting cat4" style="top:70%;height:15%;">Training</div>
+            <div class="meeting cat3" style="top:15%;height:19%;">Product Demo</div>
+            <div class="meeting cat5" style="top:45%;height:14%;">Quick Sync</div>
+            <div class="meeting cat4" style="top:70%;height:19%;">Training</div>
           </div>
           <div class="day">
-            <div class="meeting cat1" style="top:5%;height:10%;">Standup</div>
-            <div class="meeting cat2" style="top:30%;height:20%;">Client Meeting</div>
-            <div class="meeting cat3" style="top:65%;height:15%;">Interview</div>
+            <div class="meeting cat1" style="top:5%;height:14%;">Standup</div>
+            <div class="meeting cat2" style="top:30%;height:24%;">Client Meeting</div>
+            <div class="meeting cat3" style="top:65%;height:19%;">Interview</div>
           </div>
           <div class="day">
-            <div class="meeting cat5" style="top:10%;height:15%;">Weekly Recap</div>
-            <div class="meeting cat4" style="top:45%;height:10%;">Lunch & Learn</div>
-            <div class="meeting cat2" style="top:70%;height:20%;">Planning</div>
+            <div class="meeting cat5" style="top:10%;height:19%;">Weekly Recap</div>
+            <div class="meeting cat4" style="top:45%;height:14%;">Lunch & Learn</div>
+            <div class="meeting cat2" style="top:70%;height:24%;">Planning</div>
           </div>
+          <!-- horizontal dividers behind meetings -->
           <div class="div" style="top:12.5%"></div><div class="div" style="top:25%"></div><div class="div" style="top:37.5%"></div>
           <div class="div" style="top:50%"></div><div class="div" style="top:62.5%"></div><div class="div" style="top:75%"></div><div class="div" style="top:87.5%"></div>
         </div>
       </div>
     `;
-    mentorCopy.textContent = "Jam-packed week! Propose a low-friction time to connect—acknowledge their constraints.";
+    mentorCopy.textContent = "You have a jam-packed week!";
   }
 
-  // TASKS (updated look: real list with checkboxes)
+  // TASKS (removed three blank lines)
   function renderTasks(el) {
     el.classList.add('tasks');
     el.innerHTML = `
@@ -365,9 +365,6 @@
         <li><input id="t2" type="checkbox"><label for="t2">Finalize training slide deck</label></li>
         <li><input id="t3" type="checkbox"><label for="t3"><strong>Complete paperwork to hire Michael Coleman.</strong> 🐣</label></li>
         <li><input id="t4" type="checkbox"><label for="t4">Share draft rollout timeline with Jamie</label></li>
-        <li><input id="b1" type="checkbox" disabled><label for="b1">&nbsp;</label></li>
-        <li><input id="b2" type="checkbox" disabled><label for="b2">&nbsp;</label></li>
-        <li><input id="b3" type="checkbox" disabled><label for="b3">&nbsp;</label></li>
       </ul>
     `;
     el.querySelectorAll('.tasklist input[type="checkbox"]').forEach(cb => {
@@ -382,7 +379,7 @@
     mentorCopy.textContent = "Keep momentum with quick, visible wins. Check things off as you go.";
   }
 
-  // CLIENTS (title update)
+  // CLIENTS (unchanged from prior update)
   function renderClients(el) {
     el.classList.add('clients');
     el.innerHTML = `
@@ -412,35 +409,28 @@
   }
 
   // ---------- Reset via logo ----------
-  if (logoReset) {
-    logoReset.addEventListener('click', resetToStart);
-  }
+  const resetEnabled = !!logoReset;
+  if (resetEnabled) logoReset.addEventListener('click', resetToStart);
 
   function resetToStart() {
-    // State
     STATE.canInteract = false;
     STATE.unlockedByTime = false;
 
-    // UI
     startHint?.classList.remove('hidden');
     choiceMount.innerHTML = '';
     doneBtn.disabled = true;
     flowActions.classList.add('hidden');
 
-    // Mentor hidden again
     mentor.classList.add('hidden');
     mentor.setAttribute('aria-hidden', 'true');
     mentorShown = false;
 
-    // Restore opener
     openerShell?.classList.remove('hidden');
     if (openerVideo) {
       openerVideo.pause();
       openerVideo.currentTime = 0;
       openerVideo.load();
     }
-
-    // Scroll to top of main column if needed
     try { document.querySelector('.video-wrap')?.scrollIntoView({ behavior:'smooth', block:'start' }); } catch {}
   }
 })();
