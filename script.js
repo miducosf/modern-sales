@@ -568,3 +568,47 @@ JSON: ${JSON.stringify(json)}`;
   if (debugOn) toggleDebug(true);
 
 })();
+
+// === CC Tracks + Video Fit Tweaks (added) ===
+(function(){
+  function addCaptionTrack(video){
+    if (!video) return;
+    if (video.querySelector('track[kind="captions"]')) return;
+    const sourceEl = video.querySelector('source');
+    const src = video.currentSrc || (sourceEl && sourceEl.getAttribute('src')) || "";
+    if (!src || !/\.mp4($|\?)/i.test(src)) return;
+    const track = document.createElement('track');
+    track.kind = 'captions';
+    track.srclang = 'en';
+    track.label = 'English';
+    track.default = true;
+    track.src = src.replace(/\.mp4(\?.*)?$/i, '.vtt$1');
+    video.appendChild(track);
+  }
+
+  function markChatSimContain(video){
+    const sourceEl = video.querySelector('source');
+    const src = video.currentSrc || (sourceEl && sourceEl.getAttribute('src')) || "";
+    if (src.includes('video-chat-simulation.mp4')) {
+      video.classList.add('video--contain');
+    }
+  }
+
+  function processVideo(video){
+    addCaptionTrack(video);
+    markChatSimContain(video);
+  }
+
+  document.querySelectorAll('video').forEach(processVideo);
+
+  const mo = new MutationObserver((mutations) => {
+    for (const m of mutations){
+      for (const node of m.addedNodes){
+        if (node.nodeType !== 1) continue;
+        if (node.tagName === 'VIDEO') processVideo(node);
+        node.querySelectorAll && node.querySelectorAll('video').forEach(processVideo);
+      }
+    }
+  });
+  mo.observe(document.body, { childList: true, subtree: true });
+})();
