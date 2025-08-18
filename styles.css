@@ -137,3 +137,79 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 
 /* Ensure any in-panel videos don't crop unexpectedly */
 .panel video{ object-fit: contain; background:#000; }
+
+
+/* ==== Layout fixes: chat panel & "How did Jamie..." ==== */
+
+/* 1) Chat simulation: video spans both columns on top; Response A (left) + Response B (right) */
+@media (min-width: 900px) {
+  /* Turn the chat row into a 2-col grid (keep stacking on small screens) */
+  #choiceMount .panel.chat .row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-flow: row dense;
+    gap: 12px;
+    align-items: start;
+  }
+
+  /* Whatever the video wrapper is called, make it span both columns on top */
+  #choiceMount .panel.chat .row > .small-video,
+  #choiceMount .panel.chat .row > .video-panel,
+  #choiceMount .panel.chat .row > video {
+    grid-column: 1 / -1 !important;   /* full width */
+    width: 100%;
+    max-width: min(960px, 100%);
+    margin-inline: auto;
+  }
+
+  /* Ensure the two response cards sit side-by-side under the video */
+  /* If your response cards use a different class, add it here */
+  #choiceMount .panel.chat .row > .card {
+    grid-column: auto !important;      /* don’t span all columns */
+    min-width: 0;                       /* allow shrinking to fit grid */
+  }
+
+  /* nudge video a bit larger on very wide screens */
+  @media (min-width: 1200px) {
+    #choiceMount .panel.chat .row > .small-video,
+    #choiceMount .panel.chat .row > .video-panel,
+    #choiceMount .panel.chat .row > video {
+      max-width: 1040px;
+    }
+  }
+}
+
+/* 2) "How did Jamie respond..." — two video players side-by-side on wide screens */
+@media (min-width: 900px) {
+  #choiceMount .video-choices {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  /* First child goes left, second goes right */
+  #choiceMount .video-choices > .small-video:nth-of-type(1) { grid-column: 1; }
+  #choiceMount .video-choices > .small-video:nth-of-type(2) { grid-column: 2; }
+}
+
+/* Player sizing + containment so nothing overflows the white frame */
+#choiceMount .video-choices .small-video,
+#choiceMount .panel.chat .row .small-video {
+  width: 100%;
+  max-width: 640px;          /* slightly larger */
+  aspect-ratio: 16 / 9;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+#choiceMount .video-choices video,
+#choiceMount .panel.chat .row video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;        /* avoid cropped corner cases */
+  display: block;
+  background: #000;
+}
+
