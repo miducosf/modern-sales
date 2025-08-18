@@ -55,13 +55,13 @@
           openerShell.classList.add('hidden');
           openerShell.classList.remove('fade-out');
           // Fade in mentor with same message as before
-          mentorCopy.textContent = "Nice start. Explore the channels on the left—I'll coach you as you go. When you’re finished, press Done.";
+          mentorCopy.textContent = "Let's get started. Explore the channels on the left—I'll coach you as you go. When you’re finished, press Done.";
           mentor.classList.remove('hidden');
           mentor.classList.add('fade-in');
         }, { once:true });
       } else {
         // Fallback if no shell wrapper
-        mentorCopy.textContent = "Nice start. Explore the channels on the left—I'll coach you as you go. When you’re finished, press Done.";
+        mentorCopy.textContent = "Let's get started. Explore the channels on the left—I'll coach you as you go. When you’re finished, press Done.";
         mentor.classList.remove('hidden');
         mentor.classList.add('fade-in');
       }
@@ -110,7 +110,7 @@
         <div>
           <div class="small-video">
             <video preload="metadata" playsinline controls>
-              <source src="assets/05_Jamie_Closing_Positive.mp4" type="video/mp4">
+              <source src="assets/video-positive.mp4" type="video/mp4">
             </video>
           </div>
           <div style="display:flex; justify-content:center;">
@@ -120,7 +120,7 @@
         <div>
           <div class="small-video">
             <video preload="metadata" playsinline controls>
-              <source src="assets/06_Jamie_Closing_Negative.mp4" type="video/mp4">
+              <source src="assets/video-negative.mp4" type="video/mp4">
             </video>
           </div>
           <div style="display:flex; justify-content:center;">
@@ -159,7 +159,7 @@
     wrap.className = 'video-panel';
     wrap.innerHTML = `
       <video id="mgrClose" preload="metadata" playsinline autoplay controls>
-        <source src="assets/04_Manager_WrapUp.mp4" type="video/mp4">
+        <source src="assets/closing-sales-manaager.mp4" type="video/mp4">
       </video>
     `;
     choiceMount.appendChild(wrap);
@@ -173,7 +173,7 @@
     const onEnd = () => {
       mentor.classList.remove('hidden');
       mentor.setAttribute('aria-hidden', 'false');
-      mentorCopy.textContent = "Thanks for completing the scenario! You can keep exploring channels or press Done again to revisit closings.";
+      mentorCopy.textContent = "Thanks for working through the scenarios! You can keep exploring channels or select Done again to revisit the closing.";
       vid.removeEventListener('ended', onEnd);
     };
     vid.addEventListener('ended', onEnd);
@@ -262,7 +262,7 @@
       <div class="row" id="optionsRow" style="display:none;">
         <div class="card" data-outcome="positive">
           <strong>Response A</strong><br/>
-          “I hear where you’re coming from, Jamie. Let’s slow the rollout and add a mid-week check-in so your team feels supported. Does Tuesday 10am work?”
+          “I hear where you’re coming from, Jamie. Let’s schedule a check-in so your team feels supported and has a better sense of how we can move forward. Does Tuesday 10am work?”
         </div>
         <div class="card" data-outcome="negative">
           <strong>Response B</strong><br/>
@@ -288,10 +288,10 @@
       card.classList.add('selected');
 
       if (card.dataset.outcome === 'positive') {
-        swapVideo(vid, 'assets/02_Jamie_Positive.mp4');
+        swapVideo(vid, 'assets/video-positive.mp4');
         mentorCopy.textContent = "Great news! Your warm tone and adaptive answers built trust.";
       } else {
-        swapVideo(vid, 'assets/03_Jamie_Negative.mp4');
+        swapVideo(vid, 'assets/video-negative.mp4');
         mentorCopy.textContent = "Tough outcome. Next time, connect before problem-solving.";
       }
       vid.play().catch(()=>{});
@@ -356,7 +356,7 @@
       bodyScroll.addEventListener('scroll', () => { headScroll.scrollLeft = bodyScroll.scrollLeft; }, { passive:true });
     }
 
-    mentorCopy.textContent = "You have a very busy week ahead!";
+    mentorCopy.textContent = "You have a busy week ahead!";
   }
 
   function renderTasks(el) {
@@ -364,10 +364,10 @@
     el.innerHTML = `
       <h3>Tasks</h3>
       <ul class="tasklist">
-        <li><input id="t1" type="checkbox"><label for="t1">Send follow-up email to client</label></li>
-        <li><input id="t2" type="checkbox"><label for="t2">Finalize training slide deck</label></li>
+        <li><input id="t1" type="checkbox"><label for="t1">Send follow-up email to client.</label></li>
+        <li><input id="t2" type="checkbox"><label for="t2">Finalize training slide deck.</label></li>
         <li><input id="t3" type="checkbox"><label for="t3"><strong>Complete paperwork to hire Michael Coleman.</strong> 🐣</label></li>
-        <li><input id="t4" type="checkbox"><label for="t4">Share draft rollout timeline with Jamie</label></li>
+        <li><input id="t4" type="checkbox"><label for="t4">Share draft rollout timeline with Jamie.</label></li>
       </ul>
     `;
     el.querySelectorAll('.tasklist input[type="checkbox"]').forEach(cb => {
@@ -396,7 +396,7 @@
     const strategies = {
       al: "For Allegro Health, we introduced microlearning for clinical staff. Short compliance bursts reduced onboarding time and boosted completion.",
       bk: "BrightKite’s new hires got an AI mentor chatbot that adapts by role. It nudges progress and answers questions in the flow of work.",
-      cr: "Cascade Retail needed consistency. We built a scenario-based practice sim so associates could rehearse conversations safely—CSAT rose.",
+      cr: "Cascade Retail needed consistency. We built a scenario-based practice sim so associates could rehearse conversations safely and customer service scores rose.",
       ds: "DataSprout piloted a dual-chatbot roleplay: one as customer, one coaching live. Handle time dropped and call confidence improved."
     };
     el.querySelectorAll('.client').forEach(btn => {
@@ -407,7 +407,7 @@
         btn.classList.add('selected');
       });
     });
-    mentorCopy.textContent = "Tap a client to see the engagement strategy I used with them.";
+    mentorCopy.textContent = "Tap a client to see the engagement strategy we've used with them.";
   }
 
   // ---------- Reset via logo ----------
