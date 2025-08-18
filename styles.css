@@ -213,3 +213,73 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
   background: #000;
 }
 
+/* === Chat panel: explicit placement by child order === */
+@media (min-width: 900px) {
+  /* Turn the row into a 2-col grid */
+  #choiceMount .panel.chat .row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  /* Reset any previous spanning */
+  #choiceMount .panel.chat .row > * { grid-column: auto; min-width: 0; }
+
+  /* 1) First child = the video wrapper (or <video>): span both columns on top */
+  #choiceMount .panel.chat .row > *:nth-child(1) {
+    grid-column: 1 / -1 !important;
+    width: 100%;
+    max-width: min(1040px, 100%);
+    margin-inline: auto;
+  }
+
+  /* 2) Second child = Response A → left column */
+  #choiceMount .panel.chat .row > *:nth-child(2) { grid-column: 1 !important; }
+
+  /* 3) Third child = Response B → right column */
+  #choiceMount .panel.chat .row > *:nth-child(3) { grid-column: 2 !important; }
+
+  /* Make sure the video isn’t cropped */
+  #choiceMount .panel.chat .row video {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    background: #000;
+    display: block;
+  }
+}
+
+/* === "How did Jamie respond…" two-up videos: place 1st left, 2nd right === */
+@media (min-width: 900px) {
+  #choiceMount .video-choices {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  #choiceMount .video-choices > * { grid-column: auto; min-width: 0; }
+
+  /* First video left, second right */
+  #choiceMount .video-choices > *:nth-child(1) { grid-column: 1 !important; }
+  #choiceMount .video-choices > *:nth-child(2) { grid-column: 2 !important; }
+
+  /* Slightly larger players on wide screens, contained in-frame */
+  #choiceMount .video-choices > * {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  #choiceMount .video-choices video {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    background: #000;
+    display: block;
+  }
+}
+
+/* Stack cleanly below 900px (fallback) */
+@media (max-width: 899.98px) {
+  #choiceMount .video-choices { display: grid; grid-template-columns: 1fr; gap: 12px; }
+}
+
