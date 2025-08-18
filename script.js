@@ -14,6 +14,9 @@
   const flowActions = document.getElementById('flowActions');
   const continueBtn = document.getElementById('continueBtn');
 
+  // Set the start pill text
+  if (startHint) startHint.textContent = "Select play to continue.";
+
   // State
   const STATE = {
     canInteract: false,
@@ -60,11 +63,15 @@
 
     openerVideo.addEventListener('ended', () => {
       unlockIcons(); // ensure unlocked if video < 30s
-      openerShell?.classList.add('hidden'); // hide welcome video
 
-      // glide the mentor up to its resting position
-      mentor.classList.remove('lower');
-      mentor.classList.add('raise');
+      // Hide the opener window immediately…
+      openerShell?.classList.add('hidden');
+
+      // …then pause briefly and glide the mentor up slowly.
+      setTimeout(() => {
+        mentor.classList.remove('lower');
+        mentor.classList.add('raise');
+      }, 2000); // ~2s pause per your request
     });
   }
 
@@ -258,7 +265,7 @@
     mentorCopy.textContent = "Texts work for quick nudges. Lead with empathy before logistics.";
   }
 
-  // VIDEO (updated: options appear at start; more directive mentor copy)
+  // VIDEO
   function renderVideo(el) {
     el.classList.add('video-choices');
     el.innerHTML = `
@@ -433,6 +440,7 @@
     STATE.unlockedByTime = false;
 
     startHint?.classList.remove('hidden');
+    if (startHint) startHint.textContent = "Select play to continue.";
     choiceMount.innerHTML = '';
     doneBtn.disabled = true;
     flowActions.classList.add('hidden');
