@@ -568,30 +568,3 @@ JSON: ${JSON.stringify(json)}`;
   if (debugOn) toggleDebug(true);
 
 })();
-
-// === Auto-attach captions for videos based on matching .vtt filenames (added) ===
-(function(){
-  function ensureTrack(video){
-    if (!video) return;
-    if (video.querySelector('track[kind="captions"]')) return;
-    const src = (video.currentSrc || (video.querySelector('source') && video.querySelector('source').getAttribute('src')) || '').trim();
-    if (!src || !/\.mp4($|\?)/i.test(src)) return;
-    const track = document.createElement('track');
-    track.kind = 'captions';
-    track.srclang = 'en';
-    track.label = 'English';
-    track.default = true;
-    track.src = src.replace(/\.mp4(\?.*)?$/i, '.vtt$1');
-    video.appendChild(track);
-  }
-  document.querySelectorAll('video').forEach(ensureTrack);
-  const mo = new MutationObserver(muts => {
-    muts.forEach(m => m.addedNodes.forEach(node => {
-      if (node.nodeType === 1){
-        if (node.tagName === 'VIDEO') ensureTrack(node);
-        node.querySelectorAll && node.querySelectorAll('video').forEach(ensureTrack);
-      }
-    }));
-  });
-  mo.observe(document.body, { childList:true, subtree:true });
-})();

@@ -94,192 +94,43 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 @media (max-width: 380px){ :root{ --btn-scale: 0.66; } }
 
 
-/* === Video layout refinements (added) === */
-
-/* Two-up grid for "How did Jamie respond..." video choices */
-.video-choices{
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+/* === Force single-column stack on all screen sizes (temporary simplification) === */
+/* Chat simulation panel */
+#choiceMount .panel.chat .row {
+  display: block !important;    /* override grid/flex attempts */
 }
-@media (min-width: 900px){
-  .video-choices{
-    grid-template-columns: repeat(2, minmax(320px, 1fr));
-    align-items: start;
-  }
-}
-
-/* Size and contain the videos inside choice cards */
-.video-choices .small-video{
+#choiceMount .panel.chat .row > * {
+  grid-column: auto !important; /* neutralize any spanning */
   width: 100%;
-  max-width: 620px;
-  aspect-ratio: 16 / 9;
-  margin: 0 auto;
-  overflow: hidden;
-  border-radius: 12px;
-  background: #000;
+  max-width: 760px;             /* comfortable readable width */
+  margin: 0 auto 12px;
 }
-.video-choices .small-video video{
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-  background: #000;
-}
-
-/* Chat simulation: show two option cards side-by-side on wide screens and bump video size slightly */
-@media (min-width: 900px){
-  .panel.chat .row{ flex-wrap: nowrap; }
-  .panel.chat .row > * { flex: 1 1 calc(50% - 8px); }
-  .panel.chat .small-video{ max-width: 640px; }
-}
-
-
-/* Ensure any in-panel videos don't crop unexpectedly */
-.panel video{ object-fit: contain; background:#000; }
-
-
-/* ==== Layout fixes: chat panel & "How did Jamie..." ==== */
-
-/* 1) Chat simulation: video spans both columns on top; Response A (left) + Response B (right) */
-@media (min-width: 900px) {
-  /* Turn the chat row into a 2-col grid (keep stacking on small screens) */
-  #choiceMount .panel.chat .row {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr;
-    grid-auto-flow: row dense;
-    gap: 12px;
-    align-items: start;
-  }
-
-  /* Whatever the video wrapper is called, make it span both columns on top */
-  #choiceMount .panel.chat .row > .small-video,
-  #choiceMount .panel.chat .row > .video-panel,
-  #choiceMount .panel.chat .row > video {
-    grid-column: 1 / -1 !important;   /* full width */
-    width: 100%;
-    max-width: min(960px, 100%);
-    margin-inline: auto;
-  }
-
-  /* Ensure the two response cards sit side-by-side under the video */
-  /* If your response cards use a different class, add it here */
-  #choiceMount .panel.chat .row > .card {
-    grid-column: auto !important;      /* don’t span all columns */
-    min-width: 0;                       /* allow shrinking to fit grid */
-  }
-
-  /* nudge video a bit larger on very wide screens */
-  @media (min-width: 1200px) {
-    #choiceMount .panel.chat .row > .small-video,
-    #choiceMount .panel.chat .row > .video-panel,
-    #choiceMount .panel.chat .row > video {
-      max-width: 1040px;
-    }
-  }
-}
-
-/* 2) "How did Jamie respond..." — two video players side-by-side on wide screens */
-@media (min-width: 900px) {
-  #choiceMount .video-choices {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    align-items: start;
-  }
-
-  /* First child goes left, second goes right */
-  #choiceMount .video-choices > .small-video:nth-of-type(1) { grid-column: 1; }
-  #choiceMount .video-choices > .small-video:nth-of-type(2) { grid-column: 2; }
-}
-
-/* Player sizing + containment so nothing overflows the white frame */
-#choiceMount .video-choices .small-video,
-#choiceMount .panel.chat .row .small-video {
-  width: 100%;
-  max-width: 640px;          /* slightly larger */
-  aspect-ratio: 16 / 9;
-  margin: 0 auto;
-  overflow: hidden;
-  border-radius: 12px;
-}
-
-#choiceMount .video-choices video,
 #choiceMount .panel.chat .row video {
   width: 100%;
-  height: 100%;
-  object-fit: contain;        /* avoid cropped corner cases */
-  display: block;
+  height: auto;
+  object-fit: contain;
   background: #000;
+  display: block;
 }
 
-/* === Chat panel: explicit placement by child order === */
-@media (min-width: 900px) {
-  /* Turn the row into a 2-col grid */
-  #choiceMount .panel.chat .row {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    align-items: start;
-  }
-
-  /* Reset any previous spanning */
-  #choiceMount .panel.chat .row > * { grid-column: auto; min-width: 0; }
-
-  /* 1) First child = the video wrapper (or <video>): span both columns on top */
-  #choiceMount .panel.chat .row > *:nth-child(1) {
-    grid-column: 1 / -1 !important;
-    width: 100%;
-    max-width: min(1040px, 100%);
-    margin-inline: auto;
-  }
-
-  /* 2) Second child = Response A → left column */
-  #choiceMount .panel.chat .row > *:nth-child(2) { grid-column: 1 !important; }
-
-  /* 3) Third child = Response B → right column */
-  #choiceMount .panel.chat .row > *:nth-child(3) { grid-column: 2 !important; }
-
-  /* Make sure the video isn’t cropped */
-  #choiceMount .panel.chat .row video {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-    background: #000;
-    display: block;
-  }
+/* "How did Jamie respond..." */
+#choiceMount .video-choices {
+  display: block !important;    /* single column */
+}
+#choiceMount .video-choices > * {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto 12px;
+}
+#choiceMount .video-choices video {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  background: #000;
+  display: block;
 }
 
-/* === "How did Jamie respond…" two-up videos: place 1st left, 2nd right === */
-@media (min-width: 900px) {
-  #choiceMount .video-choices {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    align-items: start;
-  }
-  #choiceMount .video-choices > * { grid-column: auto; min-width: 0; }
-
-  /* First video left, second right */
-  #choiceMount .video-choices > *:nth-child(1) { grid-column: 1 !important; }
-  #choiceMount .video-choices > *:nth-child(2) { grid-column: 2 !important; }
-
-  /* Slightly larger players on wide screens, contained in-frame */
-  #choiceMount .video-choices > * {
-    max-width: 680px;
-    margin: 0 auto;
-  }
-  #choiceMount .video-choices video {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-    background: #000;
-    display: block;
-  }
+/* Prevent white-frame overflow just in case */
+#choiceMount .panel, #choiceMount .card, #choiceMount .small-video { 
+  overflow: hidden;
 }
-
-/* Stack cleanly below 900px (fallback) */
-@media (max-width: 899.98px) {
-  #choiceMount .video-choices { display: grid; grid-template-columns: 1fr; gap: 12px; }
-}
-
