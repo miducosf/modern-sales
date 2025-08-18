@@ -569,29 +569,38 @@ JSON: ${JSON.stringify(json)}`;
 
 })();
 
-// === Auto-attach captions for videos based on matching .vtt filenames (added) ===
+
+// === Layout helpers for chat simulation & response videos (added) ===
 (function(){
-  function ensureTrack(video){
-    if (!video) return;
-    if (video.querySelector('track[kind="captions"]')) return;
-    const src = (video.currentSrc || (video.querySelector('source') && video.querySelector('source').getAttribute('src')) || '').trim();
-    if (!src || !/\.mp4($|\?)/i.test(src)) return;
-    const track = document.createElement('track');
-    track.kind = 'captions';
-    track.srclang = 'en';
-    track.label = 'English';
-    track.default = true;
-    track.src = src.replace(/\.mp4(\?.*)?$/i, '.vtt$1');
-    video.appendChild(track);
+  function upgradeChatPanel(){
+    const chatPanelRow = document.querySelector('#choiceMount .panel.chat .row');
+    if (!chatPanelRow) return;
+    // Make into a 2-col grid
+    chatPanelRow.classList.add('twocol');
+    // Ensure the first video-like element spans 2 columns
+    const vidLike = chatPanelRow.querySelector('.small-video, .video-panel, video');
+    if (vidLike) vidLike.classList.add('span-2');
   }
-  document.querySelectorAll('video').forEach(ensureTrack);
-  const mo = new MutationObserver(muts => {
-    muts.forEach(m => m.addedNodes.forEach(node => {
-      if (node.nodeType === 1){
-        if (node.tagName === 'VIDEO') ensureTrack(node);
-        node.querySelectorAll && node.querySelectorAll('video').forEach(ensureTrack);
-      }
-    }));
-  });
-  mo.observe(document.body, { childList:true, subtree:true });
+
+  function upgradeResponseVideos(){
+    const choices = document.querySelector('#choiceMount .video-choices');
+    if (!choices) return;
+    // Force two columns on wide screens; CSS handles stacking on narrow
+    choices.classList.add('twocol');
+    // Make sure each child is a grid item that can sit left/right
+    choices.querySelectorAll('.small-video').forEach(el => {
+      el.style.width = '100%';
+    });
+  }
+
+  // Run now and also after dynamic changes
+  function runUpgrades(){
+    upgradeChatPanel();
+    upgradeResponseVideos();
+  }
+  runUpgrades();
+
+  // Observe for dynamic injections
+  const mo = new MutationObserver(runUpgrades);
+  mo.observe(document.getElementById('choiceMount') || document.body, { childList: true, subtree: true });
 })();
