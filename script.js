@@ -387,10 +387,10 @@
     el.innerHTML = `
       <h3>Client Portfolio</h3>
       <div class="grid">
-        <button class="client" data-key="al"><img src="assets/headshot1.png" alt="Healthcare client headshot"><span class="badge">Healthcare</span></button>
-        <button class="client" data-key="bk"><img src="assets/headshot2.png" alt="Fintech client headshot"><span class="badge">Fintech</span></button>
-        <button class="client" data-key="cr"><img src="assets/headshot3.png" alt="Retail client headshot"><span class="badge">Retail</span></button>
-        <button class="client" data-key="ds"><img src="assets/headshot4.png" alt="SaaS client headshot"><span class="badge">SaaS</span></button>
+        <button class="client" data-key="al"><img src="assets/Anna_Allegro_Health.png" alt="Healthcare client headshot"><span class="badge">Healthcare</span></button>
+        <button class="client" data-key="bk"><img src="assets/Ben_BrightKite.png" alt="Fintech client headshot"><span class="badge">Fintech</span></button>
+        <button class="client" data-key="cr"><img src="assets/Cynthia_Cascade.png" alt="Retail client headshot"><span class="badge">Retail</span></button>
+        <button class="client" data-key="ds"><img src="assets/David_DataSprout.png" alt="SaaS client headshot"><span class="badge">SaaS</span></button>
       </div>
     `;
     const strategies = {
