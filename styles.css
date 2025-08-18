@@ -16,10 +16,10 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 .bg-frame { position: relative; max-width: 1366px; margin: 0 auto; line-height: 0; }
 .bg-img { width: 100%; height: auto; display:block; user-select:none; pointer-events:none; }
 
-/* Simple logo reset overlay (moved right ~20px, 2x height, 2.5x width) */
+/* Simple logo reset overlay (moved ~20px right, 2x taller, 2.5x wider) */
 .logo-reset{
   position:absolute;
-  left: calc(2.4% + 1.5%); /* ~20px on 1366px wide */
+  left: calc(2.4% + 1.5%); /* ~20px on a 1366px canvas */
   top: 3.2%;
   width: calc(10.5% * 2.5);
   height: calc(6.4% * 2);
@@ -30,7 +30,7 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 }
 .logo-reset:focus-visible{ box-shadow:0 0 0 3px rgba(59,130,246,.35); border-radius:10px; }
 
-/* Invisible icon hit areas + tooltips */
+/* Invisible icon hit areas */
 .icon-hit{
   position:absolute; width:var(--icon-size); aspect-ratio:1/1;
   left: calc(var(--icon-left) - var(--icon-size)/2); top:0;
@@ -44,7 +44,7 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 .icon-hit.photos   { top: calc(var(--icon6-top) - var(--icon-size)/2); }
 .icon-hit:hover, .icon-hit:focus-visible{ box-shadow: 0 0 0 3px rgba(59,130,246,.22); }
 
-/* Tooltips */
+/* Tooltips for icon hits */
 .icon-hit[data-tip]::after{
   content: attr(data-tip);
   position:absolute;
@@ -65,13 +65,15 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 .icon-hit:hover::after,
 .icon-hit:focus-visible::after{ opacity: 1; }
 
-/* Done button under icons (lower, half width, larger text) */
+/* Done button (no shrink; +20px right/down) */
 .done-btn{
   position:absolute;
-  left: calc(var(--icon-left) - 7.5%);
-  top: calc(var(--icon6-top) + 8.0%); /* ~20px lower */
-  width: 7.5%; /* half the previous width */
-  padding:12px 14px;
+  left: calc(var(--icon-left) - 7.5% + 20px);
+  top:  calc(var(--icon6-top) + 8.0% + 20px);
+  width: auto;
+  min-width: 140px;          /* prevents shrinking to a dot */
+  white-space: nowrap;
+  padding:12px 16px;
   border:none; border-radius:999px;
   background:#0b3b88; color:#fff; font-weight:800; font-size:16px; cursor:pointer;
   box-shadow:0 8px 18px rgba(2,8,23,.22);
@@ -79,26 +81,33 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 .done-btn:disabled{ opacity:.45; cursor:default; box-shadow:none; }
 .done-btn:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(59,130,246,.35); }
 
-/* Main content column (shifted slightly right to avoid left-rail overlap) */
+/* Main content column (shifted right to avoid rail overlap; half of earlier shift) */
 .video-wrap{
-  position:absolute; left:26.5%; top:20.2%; width:56%;
+  position:absolute; left:25.5%; top:20.2%; width:56%;
   display:flex; flex-direction:column; align-items:stretch;
 }
 
-/* Centered blue hint pill – same look/feel as Done button, bigger padding */
+/* Centered blue hint pill – matches Done button look */
 .start-hint{
   position:absolute; left:50%; transform:translateX(-50%);
-  top:-54px; /* sits clearly above the video */
+  top:-54px; /* above the video frame */
   background:#0b3b88; color:#fff; font-weight:800;
   font-size:16px; padding:12px 22px; border-radius:999px;
   box-shadow:0 10px 24px rgba(2,8,23,.30);
 }
 
 /* Video frame */
-.video-panel{ position:relative; width:100%; aspect-ratio:16/9; border-radius:16px; overflow:hidden; background:#e9eef3; box-shadow:0 10px 24px rgba(2,8,23,.20); }
-.video-panel video{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; object-fit:cover; background:#000; border-radius:16px; }
+.video-panel{
+  position:relative; width:100%; aspect-ratio:16/9;
+  border-radius:16px; overflow:hidden;
+  background:#e9eef3; box-shadow:0 10px 24px rgba(2,8,23,.20);
+}
+.video-panel video{
+  position:absolute; inset:0; width:100%; height:100%;
+  border:0; display:block; object-fit:cover; background:#000; border-radius:16px;
+}
 
-/* Mount area */
+/* Mount area for channel content */
 #choiceMount { position:relative; margin-top:12px; }
 
 /* Panels */
@@ -148,11 +157,17 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 .calendar .head{ display:grid; grid-template-columns:60px repeat(5,1fr); background:#f8fafc; border-bottom:1px solid #e5e7eb; }
 .calendar .cell{ padding:6px; font-weight:600; font-size:12px; text-align:center; border-left:1px solid #e5e7eb; }
 .calendar .body{ display:grid; grid-template-columns:60px repeat(5,1fr); height:220px; position:relative; }
-.calendar .times{ background:#f1f5f9; border-right:1px solid #e5e7eb; font-size:11px; color:#64748b; display:flex; flex-direction:column; justify-content:space-between; padding:6px 4px; z-index:2; }
+.calendar .times{
+  background:#f1f5f9; border-right:1px solid #e5e7eb; font-size:11px; color:#64748b;
+  display:flex; flex-direction:column; justify-content:space-between; padding:6px 4px; z-index:3;
+}
 .calendar .day{ position:relative; border-left:1px solid #e5e7eb; }
-.calendar .meeting{ position:absolute; left:4px; right:4px; border-radius:8px; padding:2px 6px; font-size:11px; color:#fff; }
+.calendar .meeting{
+  position:absolute; left:4px; right:4px;
+  border-radius:8px; padding:2px 6px; font-size:11px; color:#fff; z-index:2;
+}
 .calendar .cat1{ background:#2a5d9f } .calendar .cat2{ background:#3b82f6 } .calendar .cat3{ background:#2563eb } .calendar .cat4{ background:#1d4ed8 } .calendar .cat5{ background:#60a5fa; color:#0f172a }
-.calendar .div{ position:absolute; left:60px; right:0; height:1px; background:#e5e7eb; z-index:1 }
+.calendar .div{ position:absolute; left:60px; right:0; height:1px; background:#e5e7eb; z-index:0 }
 
 /* Tasks – checklist style */
 .tasks .tasklist{ list-style:none; margin:8px 0 0; padding:0; }
@@ -162,7 +177,8 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
   border-bottom:1px solid #e5e7eb;
 }
 .tasks .tasklist input[type="checkbox"]{
-  width:18px; height:18px; border:2px solid #0b3b88; border-radius:4px; appearance:none; display:grid; place-items:center; cursor:pointer;
+  width:18px; height:18px; border:2px solid #0b3b88; border-radius:4px;
+  appearance:none; display:grid; place-items:center; cursor:pointer;
 }
 .tasks .tasklist input[type="checkbox"]:checked{ background:#0b3b88; }
 .tasks .tasklist label{ flex:1; cursor:pointer; }
@@ -199,15 +215,15 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 .fade-in{ animation:fade .28s ease forwards; }
 @keyframes fade{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
 
-/* Shift content further right at narrower sizes to avoid left-rail overlap */
+/* Shift content a bit more at narrower sizes to avoid icon-rail overlap (half of earlier shift) */
 @media (max-width: 1200px){
-  .video-wrap{ left:28%; width:58%; top:20.5%; }
+  .video-wrap{ left:26.25%; width:58%; top:20.5%; }
 }
 @media (max-width: 1000px){
-  .video-wrap{ left:30%; width:58%; top:21%; }
+  .video-wrap{ left:27.25%; width:58%; top:21%; }
 }
 @media (max-width: 900px){
-  .video-wrap{ left:32%; width:60%; top:22%; }
+  .video-wrap{ left:28.25%; width:60%; top:22%; }
   .mentor{ max-width:none; }
   .mentor .copy{ font-size:14px; }
   :root{ --icon-size:5.2%; }
