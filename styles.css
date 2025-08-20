@@ -91,7 +91,7 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 @media (max-width: 1000px){ .video-wrap{ left:27.25%; width:58%; top:18.5%; } }
 @media (max-width: 900px){ .video-wrap{ left:28.25%; width:60%; top:18.5%; } .mentor{ max-width:none; } .mentor .copy{ font-size:14px; } :root{ --icon-size:5.2%; } }
 @media (max-width: 600px){ .panel .row > * { flex:1 1 100%; min-width: 0; } .start-hint{ top:-40px; max-width: 96%; } }
-@media (max-width: 380px){ :root{ --btn-scale: 0.66; } }
+@media (max-width: 380px){ :root{ --btn-scale: 0.66; } .start-hint{ top:-28px; } }
 
 
 /* === Force single-column stack on all screen sizes (temporary simplification) === */
